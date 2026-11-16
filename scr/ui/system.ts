@@ -9,15 +9,15 @@ export class SystemUI {
     public static showQuickActions(player: Player): void {
         const isDynamic = currentConfig.System.dynamicTps;
         const dynamicLabel = isDynamic
-            ? t("§lTPS自動緩和: §a有効", "§lTPS Auto Relax: §aON")
-            : t("§lTPS自動緩和: §c無効", "§lTPS Auto Relax: §cOFF");
+            ? t("§lTPS-Ping自動緩和: §a有効", "§lTPS-Ping Auto Relax: §aON")
+            : t("§lTPS-Ping自動緩和: §c無効", "§lTPS-Ping Auto Relax: §cOFF");
 
         new ActionFormData()
             .title(t("§5§l[Ender-AC] §r§lクイック操作", "§5§l[Ender-AC] §r§lQuick Actions"))
             .body(t("よく使う操作をワンタップで実行できます。", "Frequently used operations in one tap."))
             .button(t("§a§l全チェックを有効化", "§a§lEnable All Checks"))
             .button(t("§c§l全チェックを無効化", "§c§lDisable All Checks"))
-            .button(`${dynamicLabel}\n§r${t("(TPS低下時に自動で誤検知を防止)", "(Prevents false positives on low TPS)")}`)
+            .button(`${dynamicLabel}\n§r${t("(TPS-Ping低下時に自動で誤検知を防止)", "(Prevents false positives on low TPS-Ping)")}`)
             .button(t("§4§l設定を初期化", "§4§lReset Config"))
             .show(player)
             .then(({ canceled, selection }) => {
@@ -38,8 +38,8 @@ export class SystemUI {
         const next = !c.System.dynamicTps;
         ConfigManager.saveConfig({ ...c, System: { ...c.System, dynamicTps: next } });
         player.sendMessage(`${currentConfig.System.prefix} ` + (getLanguage() === "ja"
-            ? `§aTPS連動自動緩和を ${next ? "§a§l有効" : "§c§l無効"} §aに変更しました。`
-            : `§aTPS Auto Relax set to ${next ? "§a§lON" : "§c§lOFF"}§a.`));
+            ? `§aTPS-Ping連動自動緩和を ${next ? "§a§l有効" : "§c§l無効"} §aに変更しました。`
+            : `§aTPS-Ping Auto Relax set to ${next ? "§a§lON" : "§c§lOFF"}§a.`));
         this.showQuickActions(player);
     }
 

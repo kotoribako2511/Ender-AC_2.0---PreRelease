@@ -35,14 +35,14 @@ export class MainMenuUI {
             `§r§l日数: §e${world.getDay()}\n` +
             `§r§l有効な検知機能: ${enabled === total ? "§a" : "§e"}${enabled}§7/§f${total}\n` +
             `§l検知ログ: §e${LogManager.logs.length}§7件\n` +
-            `§r§lTPSに応じた閾値の自動変更: ${currentConfig.System.dynamicTps ? "§a有効" : "§c無効"}\n\n` +
+            `§r§lTPS-Pingに応じた閾値の自動変更: ${currentConfig.System.dynamicTps ? "§a有効" : "§c無効"}\n\n` +
             `§r操作したい項目を選択してください。\n`, `§l§b--- world information --- \n` +
             `§r§lServer TPS: ${tpsColor}${tps} §7/ 20.0\n` +
             `§r§lPlayers: §e${world.getPlayers().length}\n` +
             `§r§lDay: §e${world.getDay()}\n` +
             `§r§lActive Checks: ${enabled === total ? "§a" : "§e"}${enabled}§7/§f${total}\n` +
             `§lDetection Logs: §e${LogManager.logs.length}\n` +
-            `§r§lTPS Dynamic Threshold: ${currentConfig.System.dynamicTps ? "§aON" : "§cOFF"}\n\n` +
+            `§r§lTPS-Ping Dynamic Threshold: ${currentConfig.System.dynamicTps ? "§aON" : "§cOFF"}\n\n` +
             `§rSelect an item to operate.\n`))
             .button(t("§lプレイヤー管理", "§lPlayer Management"), "textures/ui/dressing_room_skins")
             .button(t("§lモブ管理", "§lMob Management"), "textures/ui/icon_llama")
