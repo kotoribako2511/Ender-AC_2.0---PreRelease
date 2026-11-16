@@ -1,0 +1,22 @@
+{
+  "name": "ender-ac_2.0",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "tsc -w"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@minecraft/server": "^2.12.0-beta.1.26.60-preview.23",
+    "@minecraft/server-admin": "1.0.0-beta.1.26.50-preview.24",
+    "@minecraft/server-net": "1.0.0-beta.1.26.50-preview.24",
+    "@minecraft/server-ui": "^2.4.0-beta.1.26.60-preview.23"
+  },
+  "devDependencies": {
+    "@types/node": "^25.3.3"
+  }
+}

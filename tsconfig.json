@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "target": "es2020",                
+    "module": "es2020",
+    "moduleResolution": "node",      
+    "lib": ["es2020", "DOM"],                 
+    
+    "types": [
+      "@minecraft/server",             
+      "@minecraft/server-ui",
+      "@minecraft/server-admin"    
+    ],
+
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    
+    "rootDir": "./scr",            
+    "outDir": "./scripts"              
+  },
+  "include": ["scr/**/*"],         
+  "exclude": ["node_modules", "entities", "manifest.json", "pack_icon.png"]
+}

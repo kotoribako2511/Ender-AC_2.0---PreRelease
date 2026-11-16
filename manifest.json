@@ -1,0 +1,38 @@
+{
+  "format_version": 2,
+  "header": {
+      "description": "test",
+      "name": "Ender-AC v1.0.2",
+      "uuid": "cf60f9a7-3da0-48e6-8859-3a1fb6f732d7",
+      "version": [ 3, 25, 0 ],
+      "min_engine_version": [ 1, 19, 60 ]
+  },
+  "modules": [
+      {
+          "description": "kotori game test",
+          "type": "script",
+          "language": "javascript",
+          "uuid": "f73f3ea5-0089-48cc-9fba-bc103ccd93e8",
+          "version": [ 3, 25, 0 ],
+          "entry": "scripts/main.js"
+      }
+  ],
+  "dependencies": [
+    {
+      "module_name": "@minecraft/server",
+      "version": "beta"
+    },
+    {
+      "module_name": "@minecraft/server-gametest",
+      "version": "beta"
+    },
+    {
+      "module_name": "@minecraft/server-ui",
+      "version": "beta"
+    },
+    {
+      "module_name": "@minecraft/server-admin",
+      "version": "beta"
+    }
+  ]
+}
