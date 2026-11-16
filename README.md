@@ -13,7 +13,8 @@ Ender-ACは、Minecraft Bedrock Edition（統合版）向けのチート検知�
 
 1. [Releases](https://github.com/ユーザー名/Ender-AC_2.0--PreRelease/releases) から `.mcpack` をダウンロード
 2. Minecraftにインポートし、ワールドのビヘイビアパックとして適用
-3. ワールド内で `/eac:start` を実行（実行したプレイヤーがサーバーオーナーに登録されます）
+3. マイクラのワールド設定-実験的機能からbetaAPIを必ずオンにしてください。
+4. ワールド内で `/eac:start` を実行（実行したプレイヤーがサーバーオーナーに登録されます）
 
 ## 主要コマンド
 
