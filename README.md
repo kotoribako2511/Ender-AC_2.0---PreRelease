@@ -30,11 +30,11 @@ Ender-ACは、Minecraft Bedrock Edition（統合版）向けのチート検知�
 
 ## 参考
 
-TNAntiCheat
-Scythe AntiCheat
+1. TNAntiCheat
+2. Scythe AntiCheat
 
 ## debugger
 
-Choppyw
-meron2058
-ZUZUx29
+1. Choppyw
+2. meron2058
+3. ZUZUx29
