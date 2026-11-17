@@ -258,6 +258,7 @@ export class ACPlayer {
     public slowfallFlag: FlagState;
     public scaffold: ScaffoldData;
     public pingEma: number;
+    public lastLandProtectLoc?: Vector3;
 
     constructor(player: Player) {
         this.player = player;
@@ -324,6 +325,7 @@ export class ACPlayer {
             flag: { vl: 0, lastFlagTick: 0 }
         };
         this.pingEma = 0;
+        this.lastLandProtectLoc = undefined;
     }
 }
 
@@ -583,6 +585,30 @@ export interface JoinConfig {
     spawnTimeoutTick: number;
 }
 
+export interface LandProtectZone {
+    id: string;
+    name: string;
+    x1: number;
+    y1: number;
+    z1: number;
+    x2: number;
+    y2: number;
+    z2: number;
+    dim: string;
+    blockBreak: boolean;
+    blockPlace: boolean;
+    interact: boolean;
+    entry: boolean;
+    allowedPlayers: string[];
+    allowOwner: boolean;
+    allowAdmin: boolean;
+}
+
+export interface LandProtectConfig {
+    enabled: boolean;
+    zones: LandProtectZone[];
+}
+
 export interface ACConfig {
     System: SystemConfig;
     Chat: ChatConfig;
@@ -616,4 +642,5 @@ export interface ACConfig {
     NoSlow: NoSlowConfig;
     AirSwim: AirSwimConfig;
     Contradiction: ContradictionConfig;
+    LandProtect: LandProtectConfig;
 }

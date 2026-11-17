@@ -29,7 +29,8 @@ export class JoinManagementUI {
             });
     }
 
-    private static showJoinSettings(admin: Player): void {
+    public static showJoinSettings(admin: Player, back?: () => void): void {
+        const returnBack = back ?? (() => this.showJoinMenu(admin));
         const joinCfg = currentConfig.Join ?? { enabled: true, kickMessage: "" };
         new ModalFormData()
             .title(t("§l入出管理AC 設定", "§lJoin Check AC Settings"))
@@ -41,7 +42,7 @@ export class JoinManagementUI {
                 200, 800, { defaultValue: currentConfig.Join?.spawnTimeoutTick ?? 200 })
             .show(admin)
             .then(({ canceled, formValues }) => {
-                if (canceled || !formValues) return this.showJoinMenu(admin);
+                if (canceled || !formValues) return returnBack();
                 ConfigManager.saveConfig({
                     ...currentConfig,
                     Join: {
@@ -52,7 +53,7 @@ export class JoinManagementUI {
                     },
                 });
                 admin.sendMessage(`${currentConfig.System.prefix} ` + t("§a入出管理設定を保存しました。", "§aJoin settings saved."));
-                this.showJoinMenu(admin);
+                returnBack();
             });
     }
 }

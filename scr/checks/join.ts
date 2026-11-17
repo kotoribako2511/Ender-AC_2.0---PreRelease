@@ -102,15 +102,15 @@ interface PlayerWaitSpwan {
 
 export let PlayerWaitSpawn: PlayerWaitSpwan[] = [];
 
-export function handlePlayerJoin(ev:PlayerJoinAfterEvent): void {
+export function handlePlayerJoin(ev: PlayerJoinAfterEvent): void {
     system.run(() => {
         const player = world.getEntity(ev.playerId);
+        if (!player) return;
         
         PlayerWaitSpawn.push({ name: ev.playerName, time: system.currentTick });
         const data = getPlayerData(player as Player);
         data.joinBypass.enable = true;
 
-        if (!player) return;
         if (!(player instanceof Player)) {
             KickProcessing(ev.playerName, "join", "No Instance");
             return;

@@ -243,10 +243,13 @@ export class ManualUI {
                     "§7  タグ所持中はテレポート検出が無効になります。\n" +
                     "§7  /tag @s remove eac:tpBypass で解除できます。\n" +
                     "§7  §c※ 常時有効化は推奨されません。\n\n" +
-                    "§a・/eac:tp コマンド\n" +
-                    "§7  バニラの /tp と同等のコマンドです。\n" +
+                    "§a・/eac:tp /eac:tp-toコマンド\n" +
+                    "§7  バニラの /tp 疑似コマンドです。\n" +
+                    "§7  /eac:tpはプレイヤーを座標に、\n" +
+                    "§7  /eac:tp-toはプレイヤーからプレイヤーにtp\n" +
                     "§7  実行時に自動で 20 tick の猶予が付与されます。\n" +
-                    "§7  例: /eac:tp @s 100 64 100\n\n" +
+                    "§7  例: /eac:tp @s 100 64 100\n" +
+                    "§7  コマンドブロックなどで固定的なtpをする場合セーフゾーンを使うことを推奨します\n\n" +
                     "§a・Player 管理 UI からの TP\n" +
                     "§7  メインメニュー → Player 一覧 → 対象を選択 →\n" +
                     "§7  「このプレイヤーにTP」「このプレイヤーをTPさせる」\n" +
@@ -474,10 +477,13 @@ export class ManualUI {
                     "§7  while the tag is held.\n" +
                     "§7  Remove with /tag @s remove eac:tpBypass.\n" +
                     "§7  §c* Not recommended for permanent use.\n\n" +
-                    "§a- /eac:tp command\n" +
-                    "§7  Equivalent to vanilla /tp.\n" +
-                    "§7  Automatically grants 20 ticks of grace on execution.\n" +
-                    "§7  Example: /eac:tp @s 100 64 100\n\n" +
+                    "§a・/eac:tp and /eac:tp-to commands\n" +
+                    "§7  Pseudo commands for vanilla /tp.\n" +
+                    "§7  /eac:tp teleports players to coordinates,\n" +
+                    "§7  /eac:tp-to teleports a player to another player.\n" +
+                    "§7  A 20-tick grace period is automatically granted upon execution.\n" +
+                    "§7  Example: /eac:tp @s 100 64 100\n" +
+                    "§7  Using safe zones is recommended for static teleportation via command blocks, etc.\n\n" +
                     "§a- Teleport via Player Management UI\n" +
                     "§7  Main Menu → Player List → Select target →\n" +
                     "§7  \"Teleport to this player\" / \"Teleport this player\".\n" +

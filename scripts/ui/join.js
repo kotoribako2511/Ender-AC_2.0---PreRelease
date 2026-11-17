@@ -23,7 +23,8 @@ export class JoinManagementUI {
             import("./main-menu.js").then((m) => m.MainMenuUI.showMainMenu(admin)).catch(() => { });
         });
     }
-    static showJoinSettings(admin) {
+    static showJoinSettings(admin, back) {
+        const returnBack = back ?? (() => this.showJoinMenu(admin));
         const joinCfg = currentConfig.Join ?? { enabled: true, kickMessage: "" };
         new ModalFormData()
             .title(t("§l入出管理AC 設定", "§lJoin Check AC Settings"))
@@ -33,7 +34,7 @@ export class JoinManagementUI {
             .show(admin)
             .then(({ canceled, formValues }) => {
             if (canceled || !formValues)
-                return this.showJoinMenu(admin);
+                return returnBack();
             ConfigManager.saveConfig({
                 ...currentConfig,
                 Join: {
@@ -44,7 +45,7 @@ export class JoinManagementUI {
                 },
             });
             admin.sendMessage(`${currentConfig.System.prefix} ` + t("§a入出管理設定を保存しました。", "§aJoin settings saved."));
-            this.showJoinMenu(admin);
+            returnBack();
         });
     }
 }

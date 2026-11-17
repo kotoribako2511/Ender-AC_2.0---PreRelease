@@ -153,6 +153,8 @@ function normalizeLanguageCode(input: string | undefined): "ja" | "en" | undefin
 }
 
 const STRING = CustomCommandParamType.String;
+const LOCATION = CustomCommandParamType.Location
+const  FLOAT = CustomCommandParamType.Float
 const PLAYER_SELECTOR = CustomCommandParamType.PlayerSelector;
 
 const commands: CommandDefinition[] = [
@@ -240,27 +242,61 @@ const commands: CommandDefinition[] = [
     },
     {
         name: "eac:tp",
-        description: "Teleport command equivalent to vanilla /tp but bypasses AC detection",
+        description: "Teleport target to coordinates (bypasses AC detection)",
         permissionLevel: CommandPermissionLevel.GameDirectors,
         params: [
-            { name: "a", type: STRING },
-            { name: "b", type: STRING, optional: true },
-            { name: "c", type: STRING, optional: true },
-            { name: "d", type: STRING, optional: true },
-            { name: "e", type: STRING, optional: true },
-            { name: "f", type: STRING, optional: true },
+            { name: "victim", type: PLAYER_SELECTOR },           // 誰を
+            { name: "destination", type: LOCATION },                  // どこへ (x y z / ~ / ^)
+            { name: "rotationY", type: FLOAT, optional: true },     // yaw
+            { name: "rotationX", type: FLOAT, optional: true },     // pitch
         ],
-        handler: (ctx, args) => {
-            const argStr = args.filter((a) => a !== undefined && a !== null).join(" ");
-            if (!argStr) return failure("Usage: /eac:tp <target> <destination>");
+        handler: (ctx, [victims, location, rotY, rotX]) => {
+            const list = (victims as Player[] | undefined) ?? [];
+            const loc = location as { x: number; y: number; z: number } | undefined;
+            if (!list.length || !loc) return failure("Invalid arguments");
+
+            const rotation = (rotY !== undefined && rotX !== undefined)
+                ? { x: Number(rotX), y: Number(rotY) } : undefined;
+
             system.run(() => {
-                if (ctx.player) setTeleportGrace(ctx.player, 20);
-                for (const p of world.getPlayers()) if (argStr.includes(p.name)) setTeleportGrace(p, 20);
                 safeCall(() => {
-                    world.getDimension("overworld").runCommand(`tp ${argStr}`);
-                }, (e) => {
-                    ctx.player?.sendMessage(`${currentConfig.System.prefix} §cTeleport failed: ${e}`);
-                });
+                    for (const target of list) {
+                        if (!target?.isValid) continue;
+                        setTeleportGrace(target, 20);
+                        target.teleport(
+                            { x: loc.x, y: loc.y, z: loc.z },
+                            rotation
+                                ? { dimension: target.dimension, rotation }
+                                : { dimension: target.dimension },
+                        );
+                    }
+                }, (e) => ctx.player?.sendMessage(`§cTeleport failed: ${e}`), "eac:tp");
+            });
+            return success();
+        },
+    },
+    {
+        name: "eac:tp-to",
+        description: "Teleport target to another player (bypasses AC detection)",
+        permissionLevel: CommandPermissionLevel.GameDirectors,
+        params: [
+            { name: "victim", type: PLAYER_SELECTOR },        
+            { name: "destination", type: PLAYER_SELECTOR },          
+        ],
+        handler: (ctx, [victims, destinations]) => {
+            const list = (victims as Player[] | undefined) ?? [];
+            const destList = (destinations as Player[] | undefined) ?? [];
+            const dest = destList[0];
+            if (!list.length || !dest?.isValid) return failure("Invalid arguments");
+
+            system.run(() => {
+                safeCall(() => {
+                    for (const target of list) {
+                        if (!target?.isValid) continue;
+                        setTeleportGrace(target, 20);
+                        target.teleport(dest.location, { dimension: dest.dimension });
+                    }
+                }, (e) => ctx.player?.sendMessage(`§cTeleport failed: ${e}`), "eac:tp-to");
             });
             return success();
         },

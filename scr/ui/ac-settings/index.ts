@@ -36,6 +36,11 @@ export class ACSettingsUI {
                 handler: (p) => SystemSettingsUI.showSystemMenu(p, () => this.showACSettingsMenu(p)),
             },
             {
+                name: acSettingButtons.Join,
+                status: this.getStatusText(c.Join?.enabled ?? false),
+                handler: (p) => import("../join.js").then((m) => m.JoinManagementUI.showJoinSettings(p, () => this.showACSettingsMenu(p))).catch(() => { }),
+            },
+            {
                 name: acSettingButtons.GameMode,
                 status: this.getStatusText(
                     c.System.GMChangeNoticeEnabled ?? true,
@@ -109,8 +114,8 @@ export class ACSettingsUI {
         const action = new ActionFormData()
             .title(t("§lAC 詳細設定", "§lAC Settings"))
             .body(t(
-                "設定を変更したい機能を選択してください。\n§7§4Punishment §7から検知ごとの罰則タイプを一括管理できます。",
-                "Select a feature to configure.\n§7Use §4Punishment §7to bulk-manage punishment types per detection.",
+                "設定を変更したい機能を選択してください。\n§7§4Punishment §7から検知ごとの罰則タイプを一括管理できます。\nhigh, mid, lowは処理の重さを表します",
+                "Select a feature to configure.\n§7Use §4Punishment §7to bulk-manage punishment types per detection. \nHigh, mid, and low represent the processing load.",
             ));
         for (const item of menuItems) action.button(`§l${item.name} - ${item.status}`);
         action.show(player).then(({ canceled, selection }) => {

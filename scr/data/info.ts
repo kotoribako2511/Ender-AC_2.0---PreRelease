@@ -249,6 +249,7 @@ export const acSettingButtons = {
     NoSlow: "NoSlow §alow§r§l",
     AirSwim: "AirSwim §alow§r§l",
     Scaffold: "Scaffold §chigh§r§l",
+    Join: "Join §alow§r§l",
     Contradiction: "Contradiction §alow§r§l",
 } as const;
 

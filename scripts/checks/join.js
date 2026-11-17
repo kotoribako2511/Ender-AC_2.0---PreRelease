@@ -91,11 +91,11 @@ export let PlayerWaitSpawn = [];
 export function handlePlayerJoin(ev) {
     system.run(() => {
         const player = world.getEntity(ev.playerId);
+        if (!player)
+            return;
         PlayerWaitSpawn.push({ name: ev.playerName, time: system.currentTick });
         const data = getPlayerData(player);
         data.joinBypass.enable = true;
-        if (!player)
-            return;
         if (!(player instanceof Player)) {
             KickProcessing(ev.playerName, "join", "No Instance");
             return;

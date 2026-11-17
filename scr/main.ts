@@ -1,6 +1,6 @@
 import { world, system, EntityRidingComponent, InputPermissionCategory, Player, PlayerPlaceBlockBeforeEvent, PlayerBreakBlockBeforeEvent, ItemStack, ItemUseBeforeEvent, InputButton } from "@minecraft/server";
 import { beforeEvents } from "@minecraft/server-admin";
-import { getPlayerData, TPSCalculator } from "./util/util.js";
+import { getPlayerData, TPSCalculator, WorldUtils } from "./util/util.js";
 import { currentConfig, BanManager, ConfigManager, MuteManager } from "./data/config.js";
 import { BlockLogManager, PlayerAccessLogManager, AdminActionLogManager } from "./log.js";
 import { checkBlockPlace, checkNukerBefore, processNukerTick, checkInstaBreak } from "./checks/block/index.js";
@@ -34,6 +34,7 @@ import {
 } from "./util/constants.js";
 import { PlayerCameraUI } from "./ui/player/camera.js";
 import { checkAirPlace } from "./checks/block/place.js";
+import { LandProtectManager } from "./checks/landProtect.js";
 
 
 type Strategy<T> = (context: T) => boolean | void;
@@ -94,6 +95,15 @@ blockPlacePipeline.add(ev => {
     .add(ev => {
         if (ev.cancel) return;
         safeCall(() => { getPlayerData(ev.player).Noswing.place_tick = system.currentTick; });
+    })
+    .add(ev => {
+        if (!currentConfig.LandProtect?.enabled) return;
+        const target = WorldUtils.BlockPlaceWith(ev.face, ev.block.location);
+        if (!LandProtectManager.canPlace(ev.player, target, ev.dimension.id)) {
+            ev.cancel = true;
+            ev.player.sendMessage(`${currentConfig.System.prefix} §cこの土地ではブロックを設置できません。`);
+            return false;
+        }
     });
 
 const blockBreakPipeline = new StrategyPipeline<PlayerBreakBlockBeforeEvent>();
@@ -137,6 +147,14 @@ blockBreakPipeline.add(ev => {
     .add(ev => {
         if (ev.cancel) return;
         safeCall(() => { getPlayerData(ev.player).Noswing.break_tick = system.currentTick; });
+    })
+    .add(ev => {
+        if (!currentConfig.LandProtect?.enabled) return;
+        if (!LandProtectManager.canBreak(ev.player, ev.block.location, ev.dimension.id)) {
+            ev.cancel = true;
+            ev.player.sendMessage(`${currentConfig.System.prefix} §cこの土地ではブロックを破壊できません。`);
+            return false;
+        }
     });
 
 const playerTickPipeline = new StrategyPipeline<{ player: Player; nowTick: number }>();
@@ -153,9 +171,9 @@ playerTickPipeline
         const ridingComp = ctx.player.getComponent(EntityRidingComponent.componentId);
         const isRiding = ridingComp?.isValid ?? false;
         const isClimbing = ctx.player.isClimbing;
-        const isSpecialMovement = 
-        isRiding || isClimbing || ctx.player.isFlying || 
-        ctx.player.isGliding || ctx.player.isInWater || ctx.player.isSwimming;
+        const isSpecialMovement =
+            isRiding || isClimbing || ctx.player.isFlying ||
+            ctx.player.isGliding || ctx.player.isInWater || ctx.player.isSwimming;
         const equippable = ctx.player.getComponent("equippable");
         const currentRot = ctx.player.getRotation();
 
@@ -169,14 +187,14 @@ playerTickPipeline
 
         if (isRiding) {
             data.Lock.Ride = false;
-            system.runTimeout(() => { 
-                data.Lock.Ride = ctx.player.isValid && isRiding; 
+            system.runTimeout(() => {
+                data.Lock.Ride = ctx.player.isValid && isRiding;
             }, Math.floor(currentConfig.System.lockTimeoutMs / MS_PER_TICK));
         }
         if (isClimbing) {
             data.Lock.Climb = false;
-            system.runTimeout(() => { 
-                data.Lock.Climb = !ctx.player.isClimbing; 
+            system.runTimeout(() => {
+                data.Lock.Climb = !ctx.player.isClimbing;
             }, Math.floor(currentConfig.System.lockTimeoutMs / MS_PER_TICK));
         }
 
@@ -197,6 +215,33 @@ playerTickPipeline
         }
 
         PermissionManager.updateNameCache(ctx.player);
+    })
+    .add(ctx => {
+        if (!currentConfig.LandProtect?.enabled) return;
+        const player = ctx.player;
+        const loc = player.location;
+        const dim = player.dimension.id;
+        const data = getPlayerData(player);
+
+        if (data.lastDimension !== dim) {
+            data.lastLandProtectLoc = undefined;
+        }
+
+        if (!LandProtectManager.canEnter(player, loc, dim)) {
+            const safeLoc = data.lastLandProtectLoc;
+            if (safeLoc) {
+                player.teleport(safeLoc, { dimension: player.dimension });
+            } else if (data.lastLocation) {
+                player.teleport(data.lastLocation, { dimension: player.dimension });
+            } else {
+                const spawn = world.getDefaultSpawnLocation();
+                player.teleport(spawn, { dimension: world.getDimension("overworld") });
+            }
+            data.teleport.allowedUntilTick = Math.max(data.teleport.allowedUntilTick, ctx.nowTick + 20);
+            player.sendMessage(`${currentConfig.System.prefix} §cこのエリアには侵入できません。`);
+        } else {
+            data.lastLandProtectLoc = loc;
+        }
     });
 
 const ItemUsePipeline = new StrategyPipeline<ItemUseBeforeEvent>();
@@ -264,6 +309,7 @@ world.afterEvents.playerSpawn.subscribe((ev) => {
     safeCall(() => { if (player.hasTag("nuker")) player.removeTag("nuker"); });
     const data = getPlayerData(player);
     data.lastLocation = undefined;
+    data.lastLandProtectLoc = undefined;
     data.lastDimension = player.dimension.id;
     data.teleport.justRolledBack = false;
     data.Lock.Ride = true;
@@ -319,7 +365,20 @@ world.beforeEvents.chatSend.subscribe(ev => {
 
 world.beforeEvents.playerInteractWithBlock.subscribe((ev) => {
     if (!ACState.enabled) return;
+    if (currentConfig.LandProtect?.enabled && !LandProtectManager.canInteract(ev.player, ev.block.location, ev.block.dimension.id)) {
+        ev.cancel = true;
+        ev.player.sendMessage(`${currentConfig.System.prefix} §cこの土地ではインタラクトできません。`);
+        return;
+    }
     if (processEntityPlace(ev.player, ev.itemStack)) ev.cancel = true;
+});
+
+world.beforeEvents.playerInteractWithEntity.subscribe((ev) => {
+    if (!ACState.enabled) return;
+    if (currentConfig.LandProtect?.enabled && !LandProtectManager.canInteract(ev.player, ev.target.location, ev.target.dimension.id)) {
+        ev.cancel = true;
+        ev.player.sendMessage(`${currentConfig.System.prefix} §cこの土地ではエンティティとインタラクトできません。`);
+    }
 });
 
 world.beforeEvents.itemUse.subscribe(ev => {
@@ -477,6 +536,7 @@ world.afterEvents.entityDie.subscribe(({ deadEntity }) => {
     const player = deadEntity as Player;
     const data = getPlayerData(player);
     data.lastLocation = undefined;
+    data.lastLandProtectLoc = undefined;
     data.Nofall.isFallingFlag = false;
     data.Nofall.isChecking = false;
     data.Nofall.tookFallDamage = true;
@@ -528,7 +588,13 @@ system.runInterval(() => {
         if (!ACState.enabled) return;
         const nowTick = system.currentTick;
         for (const player of world.getPlayers()) {
-            playerTickPipeline.execute({ player, nowTick });
+            safeCall(
+                () => playerTickPipeline.execute({ player, nowTick }),
+                (e) => {
+                    console.warn(`${currentConfig.System.prefix} §c[${player.name}] Pipeline Error: ${e}`);
+                },
+                "playerTickPipeline"
+            );
         }
         SpawnWaitTick();
     }, (e) => {

@@ -64,5 +64,6 @@ export class ACPlayer {
             flag: { vl: 0, lastFlagTick: 0 }
         };
         this.pingEma = 0;
+        this.lastLandProtectLoc = undefined;
     }
 }

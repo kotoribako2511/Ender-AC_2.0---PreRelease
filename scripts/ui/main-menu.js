@@ -4,6 +4,7 @@ import { currentConfig } from "../data/config.js";
 import { TPSCalculator } from "../util/util.js";
 import { LogManager, PlayerAccessLogManager } from "../log.js";
 import { getLanguage, toggleLanguage, t } from "../state.js";
+import { LandProtectUI } from "./landProtect.js";
 export class MainMenuUI {
     static countEnabledChecks() {
         const c = currentConfig;
@@ -50,6 +51,7 @@ export class MainMenuUI {
             .button(t("§l検知ログ", "§lDetection Log"), "textures/ui/achievements_pause_menu_icon")
             .button(t(`§b§l入出管理 (ログ/設定) §h(${PlayerAccessLogManager.logs.length}件)`, `§b§lJoin Management (Logs/Settings) §h(${PlayerAccessLogManager.logs.length})`), "textures/ui/portalBg")
             .button(t("§lBlockLog (ブロック調査)", "§lBlockLog (Block Inspector)"), "textures/ui/icon_recipe_nature")
+            .button(t("§2§l土地保護設定", "§2§lLand Protection"), "textures/ui/icon_recipe_item.png")
             .button(t("§lクイック操作", "§lQuick Actions"), "textures/ui/settings_pause_menu_icon")
             .button(langLabel, "textures/ui/gear")
             .button(t("§l取扱説明書", "§lInstructions"), "textures/ui/icon_book_writable")
@@ -64,6 +66,7 @@ export class MainMenuUI {
                 (p) => import("./logs.js").then((m) => m.LogUI.showViolationLog(p)).catch(() => { }),
                 (p) => import("./join.js").then((m) => m.JoinManagementUI.showJoinMenu(p)).catch(() => { }),
                 (p) => import("./coreprotect.js").then((m) => m.CoreProtectUI.showMenu(p)).catch(() => { }),
+                (p) => LandProtectUI.show(p, () => this.showMainMenu(p)),
                 (p) => import("./system.js").then((m) => m.SystemUI.showQuickActions(p)).catch(() => { }),
                 (p) => this.toggleLang(p),
                 (p) => import("./manual.js").then((m) => m.ManualUI.showManual(p)).catch(() => { }),

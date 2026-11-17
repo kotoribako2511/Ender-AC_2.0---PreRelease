@@ -173,6 +173,10 @@ export const DefaultConfig: ACConfig = {
         checkSteve: true, checkSpecialChars: true,
         checkRenderDistance: true, spawnTimeoutTick: 200,
     },
+    LandProtect: {
+        enabled: true,
+        zones: [],
+    },
     Permissions: {
         bypass: {
             Fly: { owner: true, admin: false },
