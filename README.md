@@ -27,3 +27,14 @@ Ender-ACは、Minecraft Bedrock Edition（統合版）向けのチート検知�
 | `/eac:unban <name>` | BANの解除 |
 
 その他詳しい説明は `/eac:instruction` または管理者フォームから参照してください。
+
+## 参考
+
+TNAntiCheat
+Scythe AntiCheat
+
+## debugger
+
+Choppyw
+meron2058
+ZUZUx29
