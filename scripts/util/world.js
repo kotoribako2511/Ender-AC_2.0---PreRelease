@@ -31,10 +31,9 @@ export class WorldUtils {
         if (!this.isInsideWorld(location, dimId))
             return "minecraft:air";
         const dim = this.getDimension(dimId);
-        if (!dim)
+        if (!dim || location.y > ALTITUDE_LIMIT)
             return "minecraft:air";
-        if (location.y > ALTITUDE_LIMIT)
-            return getCachedBlockTypeId(dim, location.x, location.y, location.z) ?? "minecraft:air";
+        return getCachedBlockTypeId(dim, location.x, location.y, location.z) ?? "minecraft:air";
     }
     static isStandingOnSafeBlock(location, dimId) {
         if (!this.isInsideWorld(location, dimId))

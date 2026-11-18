@@ -36,8 +36,7 @@ export class WorldUtils {
     public static getblock(location: Vector3, dimId?: string): string | undefined {
         if (!this.isInsideWorld(location, dimId)) return "minecraft:air";
         const dim = this.getDimension(dimId);
-        if (!dim) return "minecraft:air";
-        if (location.y > ALTITUDE_LIMIT)
+        if (!dim || location.y > ALTITUDE_LIMIT) return "minecraft:air";
         return getCachedBlockTypeId(dim, location.x, location.y, location.z) ?? "minecraft:air";
     }
 
