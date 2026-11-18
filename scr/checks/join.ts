@@ -6,7 +6,7 @@ import { PlayerAccessLogManager } from "../log.js";
 import { PermissionManager, DetectionType } from "../permission.js";
 import { ACState, isServerOwnerByName, isServerOwnerById, hasServerOwner, t } from "../state.js";
 import { safeCall } from "../util/safe.js";
-import { AsyncPlayerJoinBeforeEvent } from "@minecraft/server-admin";
+import { AsyncPlayerJoinBeforeEvent  } from "@minecraft/server-admin";
 
 function sendMessage(string: string) {
     system.run(() => {

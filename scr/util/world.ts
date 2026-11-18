@@ -3,6 +3,7 @@ import { Nofall_safeBlocks } from "../data/info.js";
 import { safeGet } from "./safe.js";
 import { getCachedBlockTypeId } from "./blockCache.js";
 import { DirectionType } from "../data/type.js";
+import { ALTITUDE_LIMIT } from "./constants.js";
 
 export class WorldUtils {
     private static dims: Record<string, Dimension> = {};
@@ -36,6 +37,7 @@ export class WorldUtils {
         if (!this.isInsideWorld(location, dimId)) return "minecraft:air";
         const dim = this.getDimension(dimId);
         if (!dim) return "minecraft:air";
+        if (location.y > ALTITUDE_LIMIT)
         return getCachedBlockTypeId(dim, location.x, location.y, location.z) ?? "minecraft:air";
     }
 

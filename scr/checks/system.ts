@@ -28,7 +28,7 @@ export function AFKkick(data: ACPlayer, AFK: AFKConfig, nowTick: number, player:
     if (AFK.enabled && data.lastActiveTick !== 0) {
         const afkTicks = nowTick - data.lastActiveTick;
         if (afkTicks > AFK.timeoutSeconds * 20) {
-            transferPlayer(player,{ hostname: "sg.hivebedrock.network", port: 19132 })
+            transferPlayer(player, { hostname: "sg.hivebedrock.network", port: 19132 })
             return true;
         }
     }
