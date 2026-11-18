@@ -2,7 +2,6 @@ import { world, system } from "@minecraft/server";
 import { Nofall_safeBlocks } from "../data/info.js";
 import { safeGet } from "./safe.js";
 import { getCachedBlockTypeId } from "./blockCache.js";
-import { ALTITUDE_LIMIT } from "./constants.js";
 export class WorldUtils {
     static initialize() {
         system.run(() => {
@@ -28,12 +27,15 @@ export class WorldUtils {
         return location.y >= minY && location.y <= maxY;
     }
     static getblock(location, dimId) {
-        if (!this.isInsideWorld(location, dimId))
-            return "minecraft:air";
-        const dim = this.getDimension(dimId);
-        if (!dim || location.y > ALTITUDE_LIMIT)
-            return "minecraft:air";
-        return getCachedBlockTypeId(dim, location.x, location.y, location.z) ?? "minecraft:air";
+        const result = safeGet(() => {
+            if (!this.isInsideWorld(location, dimId))
+                return "minecraft:air";
+            const dim = this.getDimension(dimId);
+            if (!dim)
+                return "minecraft:air";
+            return getCachedBlockTypeId(dim, location.x, location.y, location.z) ?? "minecraft:air";
+        }, "minecraft:air");
+        return result;
     }
     static isStandingOnSafeBlock(location, dimId) {
         if (!this.isInsideWorld(location, dimId))

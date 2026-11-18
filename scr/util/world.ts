@@ -1,9 +1,8 @@
 import { world, Dimension, Vector3, system } from "@minecraft/server";
 import { Nofall_safeBlocks } from "../data/info.js";
-import { safeGet } from "./safe.js";
+import { isValid, safeGet } from "./safe.js";
 import { getCachedBlockTypeId } from "./blockCache.js";
 import { DirectionType } from "../data/type.js";
-import { ALTITUDE_LIMIT } from "./constants.js";
 
 export class WorldUtils {
     private static dims: Record<string, Dimension> = {};
@@ -34,10 +33,15 @@ export class WorldUtils {
     }
 
     public static getblock(location: Vector3, dimId?: string): string | undefined {
-        if (!this.isInsideWorld(location, dimId)) return "minecraft:air";
-        const dim = this.getDimension(dimId);
-        if (!dim || location.y > ALTITUDE_LIMIT) return "minecraft:air";
-        return getCachedBlockTypeId(dim, location.x, location.y, location.z) ?? "minecraft:air";
+        const result = safeGet(() => {
+            if (!this.isInsideWorld(location, dimId)) return "minecraft:air";
+            const dim = this.getDimension(dimId);
+            if (!dim) return "minecraft:air";
+            return getCachedBlockTypeId(dim, location.x, location.y, location.z) ?? "minecraft:air";
+        },
+            "minecraft:air"
+        )
+        return result;
     }
 
     public static isStandingOnSafeBlock(location: Vector3, dimId?: string): boolean {
