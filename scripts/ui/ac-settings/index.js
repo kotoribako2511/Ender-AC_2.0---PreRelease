@@ -103,7 +103,7 @@ export class ACSettingsUI {
             {
                 name: acSettingButtons.Contradiction,
                 status: this.getStatusText(c.Contradiction?.enabled ?? false, [
-                    c.Contradiction?.sprintSneak ?? false, c.Contradiction?.groundFall ?? false, c.Contradiction?.fallDecel ?? false,
+                    c.Contradiction?.sprintSneak ?? false, c.Contradiction?.fallDecel ?? false,
                 ]),
                 handler: (p) => MovementCheckMenus.showContradictionMenu(p, () => this.showACSettingsMenu(p)),
             },

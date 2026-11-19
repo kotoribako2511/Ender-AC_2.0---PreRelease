@@ -144,43 +144,43 @@ export class ManualUI {
                     "§7・設定の初期化",
             },
             {
-                title: "§l検出と罰則",
+                title: "§l検知と罰則",
                 body: "§l§b=== 検出と罰則 ===\n\n" +
                     "§l§6[Movement 系]\n" +
-                    "§7Fly            飛行\n" +
-                    "§7BDSFly         空中ジャンプ (BDSFly)\n" +
-                    "§7Nofall         落下ダメージ回避\n" +
+                    "§7Fly            飛行 (A-Hovering/Constant Rise, Creative, Gliding)\n" +
+                    "§7AirJump        空中ジャンプ (BDSFly)\n" +
+                    "§7Nofall-Beta    落下回避 (Nofall, SlowFall, OnGroundSpoof, FallSpoof)\n" +
+                    "§7FastFall       異常落下速度\n" +
                     "§7Step           段差超え\n" +
                     "§7NoClip         ブロック貫通\n" +
                     "§7Phase          ブロック内進入\n" +
                     "§7Speed          移動速度超過\n" +
-                    "§7Scaffold       自動足場設置\n" +
-                    "§7FastFall       異常落下速度\n" +
+                    "§7Scaffold       自動足場設置 (A, B, C, D, E, F, G, H)\n" +
                     "§7NoSlow         Web 等での減速無効\n" +
                     "§7AirSwim        空中水泳\n" +
-                    "§7Contradiction  矛盾動作 (スプリント+スニーク等)\n" +
+                    "§7Contradiction  矛盾動作 (SprintSneak, FallDeceleration)\n" +
                     "§7Teleport       異常テレポート\n\n" +
                     "§l§c[Combat 系]\n" +
-                    "§7Reach          攻撃/破壊/設置の距離超過\n" +
-                    "§7Killaura       複数エンティティへの同時攻撃\n" +
+                    "§7Reach          攻撃/破壊/設置の距離超過 (Hit, Place, Break)\n" +
+                    "§7Killaura       複数エンティティへの同時攻撃 (MultiHit, Sleep)\n" +
                     "§7NoSwing        スイングなしの攻撃/破壊/設置\n" +
-                    "§7CPS            自動クリック (秒間クリック数超過)\n\n" +
-                    "§7AutoTotem      自動トーテム装備\n" +
+                    "§7AutoClicker    自動クリック (CPS)\n" +
+                    "§7AutoTotem      自動トーテム装備\n\n" +
                     "§l§e[World 系]\n" +
                     "§7Nuker          範囲破壊\n" +
                     "§7InstaBreak     保護ブロックの即時破壊\n" +
-                    "§7BlockPlace     不正ブロックの設置\n" +
-                    "§7IllegalItem    不正アイテムの所持\n" +
-                    "§7IllegalEntity  不正エンティティの生成\n" +
-                    "§7SpawnEgg       不正スポーンエッグの使用\n" +
+                    "§7BlockPlace     不正ブロックの設置 (ID, ResetData, Inventory, AirPlace)\n" +
+                    "§7Illegal Item   不正アイテムの所持 (ID, Amount, Enchant, Name, EntityItem)\n" +
+                    "§7Illegal Entity 不正エンティティの生成 (Notice, Limit, Inventory, ResetData)\n" +
+                    "§7SpawnEgg       不正スポーンエッグの使用 (Notice, UseRejected)\n" +
                     "§7CoreProtect    ブロックログ記録\n\n" +
                     "§l§b[Chat 系]\n" +
-                    "§7Chat           禁止ワード / 連投 / 文字数超過\n\n" +
+                    "§7Chat           禁止ワード / 連投 / 文字数超過 (Word, Length, Spam, SameArticle)\n\n" +
                     "§l§d[System 系]\n" +
                     "§7AFK            放置キック\n" +
-                    "§7Join           不正参加 (ID/名前/接続元)\n" +
+                    "§7Join           不正参加 (ID/名前/描画距離)\n" +
                     "§7GameMode       OP権限を持たないPlayerのゲームモード変更を監視\n" +
-                    "§7System         不正OP取得監視\n\n" +
+                    "§7System         不正OP取得監視 (AutoDeop)\n\n" +
                     "§l§b=== 罰則タイプ ===\n" +
                     "§7・notify         スタッフへの通知のみ (ペナルティなし)\n" +
                     "§7・none           何もしない\n" +
@@ -219,7 +219,14 @@ export class ManualUI {
                     "§7  (fill コマンドと同じ 2 点指定形式)\n" +
                     "§7・「現在地を追加」: プレイヤー位置を第一地点として登録\n" +
                     "§7・「座標を手動入力」: 2 点の座標を入力して登録\n" +
-                    "§7・ゾーン内およびゾーンを跨ぐ瞬間のテレポートは検出されません",
+                    "§7・ゾーン内およびゾーンを跨ぐ瞬間のテレポートは検出されません\n\n" +
+                    "§e■ 土地保護 (LandProtect)\n" +
+                    "§7・座標範囲を指定して保護区域を登録します\n" +
+                    "§7・区域ごとにブロックの破壊禁止、設置禁止、\n" +
+                    "§7  チェスト等へのインタラクト禁止、侵入禁止を設定可能です\n" +
+                    "§7・Owner / Admin の操作許可や、特定プレイヤーの許可リストを設定できます\n" +
+                    "§7・複数の区域が重なっている場合、いずれかで禁止されていれば操作はブロックされます\n" +
+                    "§7・テレポートのセーフゾーンと同様、2点の座標(AABB)で指定します",
             },
             {
                 title: "§l注意事項",
@@ -384,40 +391,40 @@ export class ManualUI {
                 title: "§lDetection & Punishment",
                 body: "§l§b=== Detection & Punishment ===\n\n" +
                     "§l§6[Movement]\n" +
-                    "§7Fly            Flying\n" +
-                    "§7BDSFly         Air jump (BDSFly)\n" +
-                    "§7Nofall         Fall damage avoidance\n" +
+                    "§7Fly            Flying (A-Hovering/Constant Rise, Creative, Gliding)\n" +
+                    "§7AirJump        Air jump (BDSFly)\n" +
+                    "§7Nofall-Beta    Fall damage avoidance (Nofall, SlowFall, OnGroundSpoof, FallSpoof)\n" +
+                    "§7FastFall       Abnormal fall speed\n" +
                     "§7Step           Illegal step-up\n" +
                     "§7NoClip         Block clipping\n" +
                     "§7Phase          Phase through blocks\n" +
                     "§7Speed          Excessive speed\n" +
-                    "§7Scaffold       Auto scaffolding\n" +
-                    "§7FastFall       Abnormal fall speed\n" +
+                    "§7Scaffold       Auto scaffolding (A, B, C, D, E, F, G, H)\n" +
                     "§7NoSlow         Ignoring slow blocks (web, etc.)\n" +
                     "§7AirSwim        Swimming in air\n" +
-                    "§7Contradiction  Contradictory states (e.g. sprint + sneak)\n" +
+                    "§7Contradiction  Contradictory states (SprintSneak, FallDeceleration)\n" +
                     "§7Teleport       Abnormal teleportation\n\n" +
                     "§l§c[Combat]\n" +
-                    "§7Reach          Excessive hit/break/place range\n" +
-                    "§7Killaura       Multi-entity simultaneous hits\n" +
+                    "§7Reach          Excessive hit/break/place range (Hit, Place, Break)\n" +
+                    "§7Killaura       Multi-entity simultaneous hits (MultiHit, Sleep)\n" +
                     "§7NoSwing        Attack/break/place without swing\n" +
-                    "§7CPS            Auto-clicker (excessive clicks per second)\n" +
+                    "§7AutoClicker    Auto-clicker (CPS)\n" +
                     "§7AutoTotem      Auto totem equip\n\n" +
                     "§l§e[World]\n" +
                     "§7Nuker          Area destruction\n" +
                     "§7InstaBreak     Instant break of protected blocks\n" +
-                    "§7BlockPlace     Illegal block placement\n" +
-                    "§7IllegalItem    Possession of illegal items\n" +
-                    "§7IllegalEntity  Spawn of illegal entities\n" +
-                    "§7SpawnEgg       Use of illegal spawn eggs\n" +
+                    "§7BlockPlace     Illegal block placement (ID, ResetData, Inventory, AirPlace)\n" +
+                    "§7Illegal Item   Possession of illegal items (ID, Amount, Enchant, Name, EntityItem)\n" +
+                    "§7Illegal Entity Spawn of illegal entities (Notice, Limit, Inventory, ResetData)\n" +
+                    "§7SpawnEgg       Use of illegal spawn eggs (Notice, UseRejected)\n" +
                     "§7CoreProtect    Block logging\n\n" +
                     "§l§b[Chat]\n" +
-                    "§7Chat           Banned words / spam / excessive length\n\n" +
+                    "§7Chat           Banned words / spam / excessive length (Word, Length, Spam, SameArticle)\n\n" +
                     "§l§d[System]\n" +
                     "§7AFK            AFK kick\n" +
-                    "§7Join           Invalid join (ID / name / connection)\n" +
+                    "§7Join           Invalid join (ID / name / render distance)\n" +
                     "§7GameMode       Monitors GameMode changes by players without OP permission\n" +
-                    "§7System         Illegal OP acquisition monitoring\n\n" +
+                    "§7System         Illegal OP acquisition monitoring (AutoDeop)\n\n" +
                     "§l§b=== Punishment Types ===\n" +
                     "§7- notify         Notify staff only (no penalty)\n" +
                     "§7- none           Do nothing\n" +
@@ -455,7 +462,14 @@ export class ManualUI {
                     "§7- Register AABB ranges (same 2-corner format as /fill)\n" +
                     "§7- \"Add Current Position\": player position as corner 1\n" +
                     "§7- \"Add by Coordinates\": enter both corners manually\n" +
-                    "§7- Teleports inside or between zones are not detected",
+                    "§7- Teleports inside or between zones are not detected\n\n" +
+                    "§e■ Land Protection (LandProtect)\n" +
+                    "§7- Register protected areas by specifying coordinate ranges\n" +
+                    "§7- Configure block breaking, block placing, interaction (chests, etc.),\n" +
+                    "§7  and entry restrictions for each zone\n" +
+                    "§7- Configure Owner / Admin permissions and an allowed player list\n" +
+                    "§7- If multiple zones overlap, any zone that disallows an action will block it\n" +
+                    "§7- Ranges are specified with two corner coordinates (AABB)",
             },
             {
                 title: "§lWarnings",

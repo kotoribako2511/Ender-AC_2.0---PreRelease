@@ -26,21 +26,6 @@ export function checkContradictions(player: Player, data: ACPlayer, isOnGround: 
         } catch { }
     }
 
-    if (c.groundFall) {
-        try {
-            if (isOnGround && getEffectiveIsFalling(player, data) && !data.Lock.Ride && !player.isClimbing) {
-                executePunishment({
-                    player,
-                    detection: "Contradiction/GroundFall",
-                    punishment: c.groundFallPunish.type,
-                    tempkickSeconds: c.groundFallPunish.seconds,
-                    reason: "isOnGround && isFalling",
-                });
-                return;
-            }
-        } catch { }
-    }
-
     if (c.fallDecel) {
         if (!isOnGround && data.moving.SpeedY < -0.1 && speedY > data.moving.SpeedY + 0.05) {
             if (!player.isInWater && !player.isClimbing && !isInBubbleColumn(player, player.location) && !isInSpecialSlowBlock(player, player.location)) {

@@ -63,7 +63,7 @@ export class SystemUI {
             FastFall: { ...c.FastFall, enabled: value },
             NoSlow: { ...c.NoSlow, enabled: value },
             AirSwim: { ...c.AirSwim, enabled: value },
-            Contradiction: { ...c.Contradiction, enabled: value, sprintSneak: value, groundFall: value, fallDecel: value },
+            Contradiction: { ...c.Contradiction, enabled: value, sprintSneak: value, fallDecel: value },
             InstaBreak: { ...c.InstaBreak, enabled: value, cancel: value },
             Scaffold: { ...c.Scaffold, enabled: value, A: value, B: value, C: value, D: value, E: value, F: value, G: value, H: value },
             Nuker: { ...c.Nuker, enabled: value },

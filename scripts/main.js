@@ -440,7 +440,8 @@ world.afterEvents.entityHitEntity.subscribe(ev => {
 world.beforeEvents.entityHurt.subscribe(({ damageSource, hurtEntity }) => {
     if (!ACState.enabled)
         return;
-    if (hurtEntity.typeId === "minecraft:player" && damageSource.cause === "fall") {
+    const fallCauses = ["fall", "anvil", "fallingBlock", "flyIntoWall", "stalagmite", "stalactite"];
+    if (hurtEntity.typeId === "minecraft:player" && fallCauses.includes(damageSource.cause)) {
         getPlayerData(hurtEntity).Nofall.tookFallDamage = true;
     }
     if (hurtEntity.typeId !== "minecraft:player")

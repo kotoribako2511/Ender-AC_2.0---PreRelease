@@ -230,7 +230,6 @@ export class MovementCheckMenus {
             .title(t("§lContradiciton 設定", "§lContradiction Settings"))
             .toggle(t("全体有効", "Enabled"), { defaultValue: c.enabled })
             .toggle(t("Sprint + Sneak", "Sprint + Sneak"), { defaultValue: c.sprintSneak })
-            .toggle(t("OnGround + Falling", "OnGround + Falling"), { defaultValue: c.groundFall })
             .toggle(t("Fall Deceleration", "Fall Deceleration"), { defaultValue: c.fallDecel })
             .show(player)
             .then(({ canceled, formValues }) => {
@@ -238,7 +237,6 @@ export class MovementCheckMenus {
                 patchConfig("Contradiction", {
                     enabled: Boolean(formValues[0]),
                     sprintSneak: Boolean(formValues[1]),
-                    groundFall: Boolean(formValues[2]),
                     fallDecel: Boolean(formValues[3]),
                 });
                 saveAndBack(player, "§a矛盾検知設定を保存しました。", "§aContradiction settings saved.", () => back());

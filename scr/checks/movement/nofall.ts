@@ -65,14 +65,15 @@ function updateSpoofScore(player: Player, data: ACPlayer, isOnGround: boolean): 
 
     const isTerminalVelocity = moving.SpeedY <= endingSpeedY;
     const isLongFall = n.isFallingFlag && (n.fallStartY - player.location.y) > 30;
-
+    const TPS_LIMIT = 19.5
     if (n.serverIsFalling) {
         if (isTerminalVelocity || isLongFall) {
-            delta -= 3; 
+            delta -= 3;
         } else {
             if (!player.isFalling) delta += 2;
             const speedDelta = Math.abs(moving.SpeedY - moving.LastSpeedY);
-            if (speedDelta < SPEED_DELTA_THRESHOLD && moving.SpeedY < FALLING_VY_SPOOF_THRESHOLD) {
+            const isLagging = TPSCalculator.getTPS() < TPS_LIMIT;
+            if (!isLagging && speedDelta < SPEED_DELTA_THRESHOLD && moving.SpeedY < FALLING_VY_SPOOF_THRESHOLD) {
                 delta += 1;
             }
         }
@@ -126,7 +127,7 @@ export function checkNofall(
         data.Nofall.spoofScore = 0;
         return;
     }
-    
+
     const dimId = player.dimension.id;
     const nofallData = data.Nofall;
 
@@ -162,10 +163,10 @@ export function checkNofall(
             const fallDistance = nofallData.fallStartY - loc.y;
             if (fallDistance > TPSCalculator.scaleMultiplyFor(player, Nofall.distanceThreshold)
                 && !WorldUtils.isStandingOnSafeBlock(loc, dimId) && !isLiquid) {
-                
+
                 nofallData.isChecking = true;
                 const expectedFallStartY = nofallData.fallStartY;
-                
+
                 system.runTimeout(() => {
                     if (!player.isValid) {
                         nofallData.isChecking = false;
@@ -178,16 +179,16 @@ export function checkNofall(
                     const currentLoc = player.location;
                     const currentDimId = player.dimension.id;
                     const currentFeet = WorldUtils.getblock({ x: currentLoc.x, y: currentLoc.y - 0.1, z: currentLoc.z }, currentDimId);
-                    const isNowLiquid = currentFeet === "minecraft:water" || currentFeet === "minecraft:flowing_water" || currentFeet === "minecraft:lava" || currentFeet === "minecraft:flowing_lava";
-                    const isNowSafe = (player.isOnGround && (WorldUtils.isStandingOnSafeBlock(currentLoc, currentDimId) || isNowLiquid)) || player.isInWater;
+                    const isNowLiquid = currentFeet === "minecraft:water" || currentFeet === "minecraft:flowing_water" || currentFeet === "minecraft:lava" || currentFeet === "flowing_lava";
+                    const isNowSpecial = player.isFlying || player.isGliding || player.isInWater || player.isSwimming || player.isClimbing || player.getComponent("minecraft:riding")?.isValid;
+                    const isNowSafe = (player.isOnGround && (WorldUtils.isStandingOnSafeBlock(currentLoc, currentDimId) || isNowLiquid)) || isNowSpecial;
 
                     if (gm !== GameMode.Creative && gm !== GameMode.Spectator
-                        && !nofallData.tookFallDamage 
-                        && !hasEffect 
-                        && !isSpecialMovement 
+                        && !nofallData.tookFallDamage
+                        && !hasEffect
+                        && !isSpecialMovement
                         && !isNowSafe
-                        && noNewFall) { 
-                        
+                        && noNewFall) {
                         executePunishment({
                             player,
                             detection: "Nofall/A-beta",
@@ -197,7 +198,7 @@ export function checkNofall(
                             reason: `[ Distance: ${fallDistance.toFixed(2)} ]`,
                         });
                     }
-                    
+
                     nofallData.isChecking = false;
                     nofallData.isFallingFlag = false;
                     nofallData.tookFallDamage = false;
@@ -208,11 +209,24 @@ export function checkNofall(
         }
     }
 
+    let isFeetAir = false;
+    let isChunkLoaded = true;
+    try {
+        const block = player.dimension.getBlock({ x: Math.floor(loc.x), y: Math.floor(loc.y), z: Math.floor(loc.z) });
+        if (block) {
+            isFeetAir = block.isAir;
+        } else {
+            isChunkLoaded = false;
+        }
+    } catch {
+        isChunkLoaded = false;
+    }
+
     const OnGroundSpoofCheck =
         Nofall.OnGroundSpoofEnabled &&
         nowTick % Math.max(1, Nofall.onGroSpfScanTick) === 0 &&
         isOnGround && isFalling &&
-        WorldUtils.getblock(loc, dimId) === MC_AIR;
+        isChunkLoaded && isFeetAir;
 
     if (OnGroundSpoofCheck) {
         executePunishment({

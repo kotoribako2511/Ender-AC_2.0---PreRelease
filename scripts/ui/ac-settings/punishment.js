@@ -60,7 +60,6 @@ function buildPunishmentCategories() {
         { label: "NoSlow", get: () => ({ p: c.NoSlow.punish.type, t: c.NoSlow.punish.seconds }), set: (p, tt) => { c.NoSlow.punish.type = p; c.NoSlow.punish.seconds = tt; } },
         { label: "AirSwim", get: () => ({ p: c.AirSwim.punish.type, t: c.AirSwim.punish.seconds }), set: (p, tt) => { c.AirSwim.punish.type = p; c.AirSwim.punish.seconds = tt; } },
         { label: "Contradiction SprintSneak", get: () => ({ p: c.Contradiction.sprintSneakPunish.type, t: c.Contradiction.sprintSneakPunish.seconds }), set: (p, tt) => { c.Contradiction.sprintSneakPunish.type = p; c.Contradiction.sprintSneakPunish.seconds = tt; } },
-        { label: "Contradiction GroundFall", get: () => ({ p: c.Contradiction.groundFallPunish.type, t: c.Contradiction.groundFallPunish.seconds }), set: (p, tt) => { c.Contradiction.groundFallPunish.type = p; c.Contradiction.groundFallPunish.seconds = tt; } },
         { label: "Contradiction FallDecel", get: () => ({ p: c.Contradiction.fallDecelPunish.type, t: c.Contradiction.fallDecelPunish.seconds }), set: (p, tt) => { c.Contradiction.fallDecelPunish.type = p; c.Contradiction.fallDecelPunish.seconds = tt; } },
     ];
     const combat = [

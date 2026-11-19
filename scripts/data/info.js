@@ -204,7 +204,17 @@ export const Nofall_safeBlocks = new Set([
     "minecraft:web",
     "minecraft:slime",
     "minecraft:sweet_berry_bush",
-    "minecraft:powder_snow"
+    "minecraft:powder_snow",
+    "minecraft:hay_block",
+    "minecraft:bed",
+    "minecraft:ladder",
+    "minecraft:vine",
+    "minecraft:scaffolding",
+    "minecraft:twisting_vines",
+    "minecraft:weeping_vines",
+    "minecraft:cave_vines",
+    "minecraft:cave_vines_body_with_berries",
+    "minecraft:cave_vines_head_with_berries"
 ]);
 export const safe = new Set([
     "minecraft:ice",

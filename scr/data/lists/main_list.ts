@@ -97,9 +97,8 @@ export const DefaultConfig: ACConfig = {
         punish: { type: "notify", seconds: 30 },
     },
     Contradiction: {
-        enabled: true, sprintSneak: true, groundFall: true, fallDecel: true,
+        enabled: true, sprintSneak: true, fallDecel: true,
         sprintSneakPunish: { type: "notify", seconds: 30 },
-        groundFallPunish: { type: "notify", seconds: 30 },
         fallDecelPunish: { type: "notify", seconds: 30 },
     },
     FastFall: {

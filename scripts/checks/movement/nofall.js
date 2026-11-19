@@ -4,7 +4,6 @@ import { TPSCalculator, WorldUtils } from "../../util/util.js";
 import { PermissionManager, DetectionType } from "../../permission.js";
 import { addFlag } from "./flags.js";
 import { executePunishment } from "../../util/punishment.js";
-import { MC_AIR } from "../../util/constants.js";
 const DOWNWARD_VY_THRESHOLD = -0.08;
 const FALLING_VY_THRESHOLD = -0.15;
 const GENERAL_FALLING_VY_THRESHOLD = -0.1;
@@ -56,6 +55,7 @@ function updateSpoofScore(player, data, isOnGround) {
     const moving = data.moving;
     const isTerminalVelocity = moving.SpeedY <= endingSpeedY;
     const isLongFall = n.isFallingFlag && (n.fallStartY - player.location.y) > 30;
+    const TPS_LIMIT = 19.5;
     if (n.serverIsFalling) {
         if (isTerminalVelocity || isLongFall) {
             delta -= 3;
@@ -64,7 +64,8 @@ function updateSpoofScore(player, data, isOnGround) {
             if (!player.isFalling)
                 delta += 2;
             const speedDelta = Math.abs(moving.SpeedY - moving.LastSpeedY);
-            if (speedDelta < SPEED_DELTA_THRESHOLD && moving.SpeedY < FALLING_VY_SPOOF_THRESHOLD) {
+            const isLagging = TPSCalculator.getTPS() < TPS_LIMIT;
+            if (!isLagging && speedDelta < SPEED_DELTA_THRESHOLD && moving.SpeedY < FALLING_VY_SPOOF_THRESHOLD) {
                 delta += 1;
             }
         }
@@ -150,8 +151,9 @@ export function checkNofall(player, data, loc, isSpecialMovement, nowTick, gm, i
                     const currentLoc = player.location;
                     const currentDimId = player.dimension.id;
                     const currentFeet = WorldUtils.getblock({ x: currentLoc.x, y: currentLoc.y - 0.1, z: currentLoc.z }, currentDimId);
-                    const isNowLiquid = currentFeet === "minecraft:water" || currentFeet === "minecraft:flowing_water" || currentFeet === "minecraft:lava" || currentFeet === "minecraft:flowing_lava";
-                    const isNowSafe = (player.isOnGround && (WorldUtils.isStandingOnSafeBlock(currentLoc, currentDimId) || isNowLiquid)) || player.isInWater;
+                    const isNowLiquid = currentFeet === "minecraft:water" || currentFeet === "minecraft:flowing_water" || currentFeet === "minecraft:lava" || currentFeet === "flowing_lava";
+                    const isNowSpecial = player.isFlying || player.isGliding || player.isInWater || player.isSwimming || player.isClimbing || player.getComponent("minecraft:riding")?.isValid;
+                    const isNowSafe = (player.isOnGround && (WorldUtils.isStandingOnSafeBlock(currentLoc, currentDimId) || isNowLiquid)) || isNowSpecial;
                     if (gm !== GameMode.Creative && gm !== GameMode.Spectator
                         && !nofallData.tookFallDamage
                         && !hasEffect
@@ -177,10 +179,24 @@ export function checkNofall(player, data, loc, isSpecialMovement, nowTick, gm, i
             }
         }
     }
+    let isFeetAir = false;
+    let isChunkLoaded = true;
+    try {
+        const block = player.dimension.getBlock({ x: Math.floor(loc.x), y: Math.floor(loc.y), z: Math.floor(loc.z) });
+        if (block) {
+            isFeetAir = block.isAir;
+        }
+        else {
+            isChunkLoaded = false;
+        }
+    }
+    catch {
+        isChunkLoaded = false;
+    }
     const OnGroundSpoofCheck = Nofall.OnGroundSpoofEnabled &&
         nowTick % Math.max(1, Nofall.onGroSpfScanTick) === 0 &&
         isOnGround && isFalling &&
-        WorldUtils.getblock(loc, dimId) === MC_AIR;
+        isChunkLoaded && isFeetAir;
     if (OnGroundSpoofCheck) {
         executePunishment({
             player,

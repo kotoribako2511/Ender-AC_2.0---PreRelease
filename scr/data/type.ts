@@ -460,10 +460,8 @@ export interface Phase {
 export interface ContradictionConfig {
     enabled: boolean;
     sprintSneak: boolean;
-    groundFall: boolean;
     fallDecel: boolean;
     sprintSneakPunish: PunishmentPair;
-    groundFallPunish: PunishmentPair;
     fallDecelPunish: PunishmentPair;
 }
 
