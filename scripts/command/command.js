@@ -188,6 +188,7 @@ const commands = [
                     }
                     PermissionManager.setPermission(target, PermissionLevel.Owner);
                     world.sendMessage(`${currentConfig.System.prefix} §a${wasEnabled ? "Owner権限を再付与しました" : "ACを有効化し、Owner権限を付与しました"} (${name})`);
+                    target.runCommand(`clear @s ender:admin_tool`);
                     target.getComponent("minecraft:inventory")?.container.addItem(new ItemStack("ender:admin_tool", 1));
                 }, (e) => {
                     console.warn(`${currentConfig.System.prefix} §ceac:start: ${e}`);

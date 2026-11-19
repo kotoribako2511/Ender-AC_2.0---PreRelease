@@ -6,6 +6,9 @@
       "menu_category": { "category": "items" }
     },
     "components": {
+      "minecraft:display_name": {
+        "value":"Ender-AC ADMIN PANEL"
+      },
       "minecraft:icon": "stick",
       "minecraft:max_stack_size": 1,
       "minecraft:hand_equipped": false,
