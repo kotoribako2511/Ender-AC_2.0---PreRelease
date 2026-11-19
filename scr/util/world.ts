@@ -3,6 +3,7 @@ import { Nofall_safeBlocks } from "../data/info.js";
 import { isValid, safeGet } from "./safe.js";
 import { getCachedBlockTypeId } from "./blockCache.js";
 import { DirectionType } from "../data/type.js";
+import { MC_AIR } from "./constants.js";
 
 export class WorldUtils {
     private static dims: Record<string, Dimension> = {};
@@ -34,12 +35,12 @@ export class WorldUtils {
 
     public static getblock(location: Vector3, dimId?: string): string | undefined {
         const result = safeGet(() => {
-            if (!this.isInsideWorld(location, dimId)) return "minecraft:air";
+            if (!this.isInsideWorld(location, dimId)) return MC_AIR;
             const dim = this.getDimension(dimId);
-            if (!dim) return "minecraft:air";
-            return getCachedBlockTypeId(dim, location.x, location.y, location.z) ?? "minecraft:air";
+            if (!dim) return MC_AIR;
+            return getCachedBlockTypeId(dim, location.x, location.y, location.z) ?? MC_AIR;
         },
-            "minecraft:air"
+            MC_AIR
         )
         return result;
     }
@@ -69,7 +70,7 @@ export class WorldUtils {
         const x = Math.floor(location.x), y = Math.floor(location.y), z = Math.floor(location.z);
         for (let dx = -1; dx <= 1; dx++) {
             for (let dz = -1; dz <= 1; dz++) {
-                if (getCachedBlockTypeId(dim, x + dx, y - 1, z + dz) !== "minecraft:air") return false;
+                if (getCachedBlockTypeId(dim, x + dx, y - 1, z + dz) !== MC_AIR) return false;
             }
         }
         return true;

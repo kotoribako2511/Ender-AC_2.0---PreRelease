@@ -3,6 +3,7 @@ import { currentConfig } from "../data/config.js";
 import { getPlayerData, TPSCalculator, MathUtils } from "../util/util.js";
 import { PermissionManager, DetectionType } from "../permission.js";
 import { executePunishment, punishKind } from "../util/punishment.js";
+import { MC_PLAYER } from "../util/constants.js";
 export function checkReachBreak(ev) {
     const cfg = currentConfig.Reach;
     if (!cfg.enabled)
@@ -50,7 +51,7 @@ export function checkReachPlace(player, blockLoc) {
     }
 }
 export function checkHit(ev) {
-    if (ev.damagingEntity.typeId !== "minecraft:player")
+    if (ev.damagingEntity.typeId !== MC_PLAYER)
         return;
     const player = ev.damagingEntity;
     const target = ev.hitEntity;

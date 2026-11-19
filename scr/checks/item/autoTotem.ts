@@ -4,10 +4,11 @@ import { personalMessage, Console, getPlayerData, TPSCalculator, staffMessage } 
 import { AutoTotemEfName, AutoTotemEfDra, AutoTotemEfDra2 } from "../../data/info.js";
 import { ACPlayer } from "../../data/type.js";
 import { PermissionManager, DetectionType } from "../../permission.js";
+import { MC_PLAYER } from "../../util/constants.js";
 
 //AutoTotem beta version
 export function AutoTotem(ev: EffectAddAfterEvent, now: number): void {
-    if (!ev.entity.isValid || ev.entity.typeId !== "minecraft:player") return;
+    if (!ev.entity.isValid || ev.entity.typeId !== MC_PLAYER) return;
     if (PermissionManager.shouldSkipDetection(ev.entity as Player, DetectionType.AutoTotem)) return;
 
     const data = getPlayerData(ev.entity as Player);

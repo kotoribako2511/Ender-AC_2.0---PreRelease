@@ -5,42 +5,58 @@ import { ACPlayer } from "../../data/type.js";
 import { PermissionManager, DetectionType } from "../../permission.js";
 import { executePunishment } from "../../util/punishment.js";
 import { safeCall } from "../../util/safe.js";
+import { MC_AIR } from "../../util/constants.js";
 
-const SCAFFOLD_CLEAR_WINDOW_MS = 5000;
-const SCAFFOLD_PLACE_LOG_WINDOW_MS = 1000;
-const SCAFFOLD_POTENTIAL_THRESHOLD = 4;
+// --- 角度・距離の計算用 ---
+const SCAFFOLD_RAD_TO_DEG = 180 / Math.PI;
 const SCAFFOLD_RIGHT_ANGLE_DEGREES = 90;
 const SCAFFOLD_DIAGONAL_ANGLE_DEGREES = 45;
-const SCAFFOLD_RAD_TO_DEG = 180 / Math.PI;
 const SCAFFOLD_MOVE_EPSILON_SQ = 0.0001;
 
+// --- 設置ログ管理 ---
+const SCAFFOLD_CLEAR_WINDOW_MS = 5000;
+const SCAFFOLD_PLACE_LOG_WINDOW_MS = 1000;
+
+// --- 全体閾値 ---
+const SCAFFOLD_POTENTIAL_THRESHOLD = 4;
+
+// --- 検出 A ---
 const SCAFFOLD_A_MIN_BPS = 12;
 
+// --- 検出 B ---
 const SCAFFOLD_B_Y_OFFSET = 1;
 const SCAFFOLD_B_YDIF_THRESHOLD = -1;
 const SCAFFOLD_B_POTENTIAL_THRESHOLD = 2;
 
+// --- 検出 C ---
 const SCAFFOLD_C_MIN_BPS = 12;
 const SCAFFOLD_C_MIN_MDIFF = 10;
 
+// --- 検出 D ---
 const SCAFFOLD_D_MIN_BPS = 9;
 
+// --- 検出 E ---
 const SCAFFOLD_E_MIN_BPS = 11;
 const SCAFFOLD_E_MIN_MDIFF = 15;
 
+// --- 検出 F ---
 const SCAFFOLD_F_MIN_BPS = 6;
 const SCAFFOLD_F_PITCH_THRESHOLD = -15;
 const SCAFFOLD_F_PITCH_STRONG = -80;
 
+// --- 検出 G ---
 const SCAFFOLD_G_SPEED_FACTOR = 8;
 const SCAFFOLD_G_BPS_OFFSET = 5;
 const SCAFFOLD_G_BPS_FACTOR = 0.4;
 const SCAFFOLD_G_THRESHOLD = 20;
 
+// --- 検出 H ---
 const SCAFFOLD_H_MIN_BPS = 5;
 
+// --- 減衰処理 ---
 const SCAFFOLD_MIN_DECAY_TICKS = 1;
 const SCAFFOLD_MIN_DECAY_AMOUNT = 1;
+
 
 function clearRecentBlocks(data: ACPlayer): void {
     const now = Date.now();
@@ -50,7 +66,7 @@ function clearRecentBlocks(data: ACPlayer): void {
         safeCall(() => {
             const b = entry.block;
             if (b?.isValid && b.typeId === entry.blockId) {
-                b.setType("minecraft:air");
+                b.setType(MC_AIR);
             }
         }, undefined, "Scaffold.clearRecentBlocks");
     }
@@ -132,6 +148,7 @@ function runScaffoldDetections(player: Player, data: ACPlayer, block: Block, bps
 
     const dx = loc.x - lastLoc.x;
     const dz = loc.z - lastLoc.z;
+
     if (dx * dx + dz * dz < SCAFFOLD_MOVE_EPSILON_SQ) return;
     const mDegrees = dx === 0
         ? SCAFFOLD_RIGHT_ANGLE_DEGREES * Math.sign(dz)
@@ -191,6 +208,7 @@ function runScaffoldDetections(player: Player, data: ACPlayer, block: Block, bps
 
 function scaffoldB(player: Player, data: ACPlayer, block: Block): void {
     const yDiff = block.y - player.location.y + SCAFFOLD_B_Y_OFFSET;
+
     if (yDiff !== SCAFFOLD_B_YDIF_THRESHOLD) return;
 
     try {
@@ -206,7 +224,7 @@ function scaffoldB(player: Player, data: ACPlayer, block: Block): void {
         data.scaffold.types.add("B");
         data.scaffold.potentialScaffold++;
         if (data.scaffold.potentialScaffold > SCAFFOLD_B_POTENTIAL_THRESHOLD || player.isSprinting) {
-            try { block.setType("minecraft:air"); } catch (e) {
+            try { block.setType(MC_AIR); } catch (e) {
                 console.warn(`[Scaffold.scaffoldB.setType] ${e}`);
             }
         }
@@ -228,6 +246,7 @@ export function processScaffoldTick(player: Player, nowTick: number): void {
         state.vl = 0;
         return;
     }
+
     const ticks = Math.max(SCAFFOLD_MIN_DECAY_TICKS, cfg.flagDecayTicks);
     const amount = Math.max(SCAFFOLD_MIN_DECAY_AMOUNT, cfg.flagDecayAmount);
     const elapsed = nowTick - state.lastFlagTick;

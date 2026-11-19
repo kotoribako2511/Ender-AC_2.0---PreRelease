@@ -7,20 +7,17 @@ import { safeCall, safeGet } from "../../util/safe.js";
 import { getEffectiveIsFalling } from "./nofall.js";
 import { isInBubbleColumn } from "./helpers.js";
 import {
-    RIPTIDE_MAX_FLIGHT_TICKS,
-    RIPTIDE_MAX_DISTANCE,
-    RIPTIDE_GROUND_CONFIRM_TICKS,
-    RIPTIDE_STARTUP_PROTECT_TICKS,
-    CHORUS_MAX_WAIT_TICKS,
     ENDER_PEARL_GRACE_TICKS,
 } from "../../util/constants.js";
 
 const TP_BYPASS_TAG = "eac:tpBypass";
+
 const TELEPORT_ROLLBACK_GRACE_TICKS = 20;
 
 const LIKELY_FALLING_VY_THRESHOLD = -0.08;
 const LIKELY_FALLING_DY_THRESHOLD = -0.5;
 const LIKELY_FALLING_DOWN_TICKS = 2;
+
 const VERTICAL_DOMINANCE_FACTOR = 4.0;
 const VERTICAL_MIN_ABS = 1.5;
 
@@ -28,8 +25,15 @@ const MAX_PHYSICAL_SPEED_PER_TICK = 4.5;
 const MAX_STALLED_TICKS = 5;
 const MAX_EXCEPTION_DIST_SQ = 225.0;
 
-const RIPTIDE_MIN_MOVED_DIST_SQ = 4;
+
 const CHORUS_MAX_GRACE_MULTIPLIER = 2;
+const CHORUS_MAX_WAIT_TICKS = 50;
+
+const RIPTIDE_MIN_MOVED_DIST_SQ = 4;
+const RIPTIDE_MAX_FLIGHT_TICKS = 120;
+const RIPTIDE_MAX_DISTANCE = 50;
+const RIPTIDE_GROUND_CONFIRM_TICKS = 3;
+const RIPTIDE_STARTUP_PROTECT_TICKS = 10;
 
 let cachedZones: SafeTeleportZone[] = [];
 let cachedZonesRef: SafeTeleportZone[] | null = null;

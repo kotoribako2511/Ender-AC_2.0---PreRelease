@@ -3,6 +3,7 @@ import { currentConfig, illegalEntity, noticeEntity, resetEntity, illegalEggSet 
 import { globalMessage } from "../util/util.js";
 import { PermissionManager, DetectionType } from "../permission.js";
 import { safeCall } from "../util/safe.js";
+import { MC_ITEM, MC_PLAYER } from "../util/constants.js";
 
 export const entitySet = new Set<string>();
 
@@ -28,7 +29,7 @@ export function processEntitySpawn(entity: Entity): void {
         world.sendMessage(`${currentConfig.System.prefix} §r§lEntity: Spawned "${id}" at x:${Math.floor(entity.location.x)} y:${Math.floor(entity.location.y)} z:${Math.floor(entity.location.z)} [${entity.dimension.id}]`);
     }
 
-    if (!cfg.limitEnabled || id === "minecraft:player" || id === "minecraft:item") return;
+    if (!cfg.limitEnabled || id === MC_PLAYER || id === MC_ITEM) return;
 
     entitySet.add(entity.id);
 
@@ -63,7 +64,7 @@ export function loadEntitySet(EntitySet: Set<string>) {
     const dims = ["overworld", "nether", "the_end"];
     for (const dimName of dims) {
         safeCall(() => {
-            const entities = world.getDimension(dimName).getEntities({ excludeTypes: ["minecraft:player", "minecraft:item"] });
+            const entities = world.getDimension(dimName).getEntities({ excludeTypes: [MC_PLAYER, MC_ITEM] });
             for (const entity of entities) {
                 EntitySet.add(entity.id);
             }

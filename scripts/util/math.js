@@ -1,7 +1,8 @@
 import { NON_FULL_BLOCK_KEYWORDS } from "../data/info.js";
+import { MC_AIR } from "./constants.js";
 export class MathUtils {
     static checkBlocks(typeId) {
-        if (!typeId || typeId === "minecraft:air")
+        if (!typeId || typeId === MC_AIR)
             return false;
         return !NON_FULL_BLOCK_KEYWORDS.some((key) => typeId.includes(key));
     }

@@ -6,11 +6,14 @@ import { addFlag, decayFlag } from "./flags.js";
 import { executePunishment } from "../../util/punishment.js";
 import { getEffectiveIsFalling } from "./nofall.js";
 import { safeGetBlock } from "./helpers.js";
+import { MC_AIR } from "../../util/constants.js";
+//fly A
 const FLY_A_BUFFER_SIZE = 8;
 const FLY_A_NEAR_ZERO_VELOCITY = 0.02;
 const FLY_A_HOVER_Y_RANGE = 0.05;
 const FLY_A_CONSTANT_RISE_DELTA = 0.05;
 const FLY_A_CONSTANT_RISE_Y_THRESHOLD = 0.5;
+//AirJump
 const BDSFLY_BUFFER_SIZE = 5;
 export function checkFlyA(player, data, loc, isOnGround, isGliding, isSpecialMovement, speedY, hasEffect, elytra, nowTick) {
     if (PermissionManager.shouldSkipDetection(player, DetectionType.Fly)) {
@@ -134,12 +137,12 @@ export function checkBDSFly(player, data, loc, isSpecialMovement, speedY, hasEff
     if (BDSFly.BDSfly.length < BDSFLY_BUFFER_SIZE)
         return;
     const dim = player.dimension;
-    const belowId = safeGetBlock(dim, loc.x, loc.y - 1, loc.z)?.typeId ?? "minecraft:air";
+    const belowId = safeGetBlock(dim, loc.x, loc.y - 1, loc.z)?.typeId ?? MC_AIR;
     if (data.Lock.Climb && data.Lock.Freeze_Detection
         && player.isOnGround
         && !wasOnGround
         && !isSpecialMovement
-        && belowId === "minecraft:air") {
+        && belowId === MC_AIR) {
         const quad = MathUtils.isQuadratic(BDSFly.BDSfly);
         const notAllZero = !BDSFly.BDSfly.every((v) => v === 0);
         const isFloor = WorldUtils.isfloor(loc, dim.id);

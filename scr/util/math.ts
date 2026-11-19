@@ -1,9 +1,10 @@
 import { Entity, Vector3 } from "@minecraft/server";
 import { NON_FULL_BLOCK_KEYWORDS } from "../data/info.js";
+import { MC_AIR } from "./constants.js";
 
 export class MathUtils {
     public static checkBlocks(typeId?: string): boolean {
-        if (!typeId || typeId === "minecraft:air") return false;
+        if (!typeId || typeId === MC_AIR) return false;
         return !NON_FULL_BLOCK_KEYWORDS.some((key) => typeId.includes(key));
     }
 

@@ -3,10 +3,11 @@ import { ActionFormData } from "@minecraft/server-ui";
 import { currentConfig } from "../data/config.js";
 import { t } from "../state.js";
 import { safeCall } from "../util/safe.js";
+import { MC_ITEM, MC_PLAYER } from "../util/constants.js";
 
 export class MobManagementUI {
     public static showMobManagement(player: Player): void {
-        const entities = player.dimension.getEntities({ excludeTypes: ["minecraft:player", "minecraft:item"] });
+        const entities = player.dimension.getEntities({ excludeTypes: [MC_PLAYER, MC_ITEM] });
         const groups = new Map<string, Entity[]>();
         for (const e of entities) {
             const list = groups.get(e.typeId);

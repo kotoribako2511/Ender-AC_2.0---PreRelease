@@ -5,23 +5,28 @@ import { PermissionManager, DetectionType } from "../../permission.js";
 import { addFlag } from "./flags.js";
 import { executePunishment } from "../../util/punishment.js";
 import { safeGetBlock } from "./helpers.js";
+import { MC_AIR } from "../../util/constants.js";
+// --- 落下判定 (computeServerIsFalling) ---
 const DOWNWARD_VY_THRESHOLD = -0.08;
-const FALLING_VY_THRESHOLD = -0.15;
-const GENERAL_FALLING_VY_THRESHOLD = -0.1;
 const CONSECUTIVE_DOWN_TICKS_THRESHOLD = 2;
-const SPEED_DELTA_THRESHOLD = 0.001;
+const FALLING_VY_THRESHOLD = -0.15;
+// --- スコア判定 (updateSpoofScore) ---
+const ENDING_SPEED_Y = -3.5;
+const TPS_LIMIT = 19.5;
 const FALLING_VY_SPOOF_THRESHOLD = -0.2;
+const SPEED_DELTA_THRESHOLD = 0.001;
 const AIR_TICKS_SPOOF_THRESHOLD = 10;
-const SLOWFALL_VY_THRESHOLD = 0.4;
-const SLOWFALL_BUFFER_SIZE = 5;
-const SLOWFALL_BUFFER_KEEP = 4;
 const SPOOF_SCORE_MAX = 100;
-const SPOOF_SCORE_RESET_FACTOR = 0.5;
-const SPOOF_SCORE_DECAY_SPECIAL = 5;
-const NOFALL_CHECK_DELAY_TICKS = 20;
 const SPOOF_PUNISH_COOLDOWN_TICKS = 40;
+const SPOOF_SCORE_RESET_FACTOR = 0.5;
+// --- メイン処理 (checkNofall) ---
+const SPOOF_SCORE_DECAY_SPECIAL = 5;
+const GENERAL_FALLING_VY_THRESHOLD = -0.1;
+const NOFALL_CHECK_DELAY_TICKS = 20;
+const SLOWFALL_BUFFER_SIZE = 5;
+const SLOWFALL_VY_THRESHOLD = 0.4;
+const SLOWFALL_BUFFER_KEEP = 4;
 const lastSpoofPunishTick = new WeakMap();
-//nofall beta version
 function computeServerIsFalling(player, data) {
     const n = data.Nofall;
     if (n.lastComputedTick === system.currentTick)
@@ -48,15 +53,13 @@ export function getEffectiveIsFalling(player, data) {
 }
 function updateSpoofScore(player, data, isOnGround) {
     const cfg = currentConfig.Nofall;
-    const endingSpeedY = -3.5;
     if (!cfg.fallSpoofEnabled)
         return;
     const n = data.Nofall;
     let delta = 0;
     const moving = data.moving;
-    const isTerminalVelocity = moving.SpeedY <= endingSpeedY;
+    const isTerminalVelocity = moving.SpeedY <= ENDING_SPEED_Y;
     const isLongFall = n.isFallingFlag && (n.fallStartY - player.location.y) > 30;
-    const TPS_LIMIT = 19.5;
     if (n.serverIsFalling) {
         if (isTerminalVelocity || isLongFall) {
             delta -= 3;
@@ -111,7 +114,7 @@ export function checkNofall(player, data, loc, isSpecialMovement, nowTick, gm, i
     }
     const dim = player.dimension;
     const nofallData = data.Nofall;
-    const feetBlock = safeGetBlock(dim, loc.x, loc.y - 0.1, loc.z)?.typeId ?? "minecraft:air";
+    const feetBlock = safeGetBlock(dim, loc.x, loc.y - 0.1, loc.z)?.typeId ?? MC_AIR;
     const isLiquid = feetBlock === "minecraft:water" || feetBlock === "minecraft:flowing_water" || feetBlock === "minecraft:lava" || feetBlock === "minecraft:flowing_lava";
     if (hasEffect || isSpecialMovement || player.isInWater || player.isSwimming || isLiquid) {
         nofallData.spoofScore = Math.max(0, nofallData.spoofScore - SPOOF_SCORE_DECAY_SPECIAL);
@@ -151,7 +154,7 @@ export function checkNofall(player, data, loc, isSpecialMovement, nowTick, gm, i
                     const noNewFall = Math.abs(nofallData.fallStartY - expectedFallStartY) < 0.5;
                     const currentLoc = player.location;
                     const currentDim = player.dimension;
-                    const currentFeet = safeGetBlock(currentDim, currentLoc.x, currentLoc.y - 0.1, currentLoc.z)?.typeId ?? "minecraft:air";
+                    const currentFeet = safeGetBlock(currentDim, currentLoc.x, currentLoc.y - 0.1, currentLoc.z)?.typeId ?? MC_AIR;
                     const isNowLiquid = currentFeet === "minecraft:water" || currentFeet === "minecraft:flowing_water" || currentFeet === "minecraft:lava" || currentFeet === "minecraft:flowing_lava";
                     const isNowSpecial = player.isFlying || player.isGliding || player.isInWater || player.isSwimming || player.isClimbing || player.getComponent("minecraft:riding")?.isValid;
                     const isNowSafe = (player.isOnGround && (WorldUtils.isStandingOnSafeBlock(currentLoc, currentDim.id) || isNowLiquid)) || isNowSpecial;

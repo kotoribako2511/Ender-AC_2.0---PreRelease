@@ -3,6 +3,7 @@ import { currentConfig, illegalBlockSet, resetBlockSet } from "../../data/config
 import { globalMessage, Console, personalMessage, WorldUtils, staffMessage } from "../../util/util.js";
 import { scanAndClearContainer } from "../item/index.js";
 import { PermissionManager, DetectionType } from "../../permission.js";
+import { MC_AIR } from "../../util/constants.js";
 
 export function checkBlockPlace(ev: PlayerPlaceBlockBeforeEvent): void {
 
@@ -45,7 +46,7 @@ export function checkBlockPlace(ev: PlayerPlaceBlockBeforeEvent): void {
                 if (illegalFound.length > 0) {
                     staffMessage(player, "Illegal Item Container", ` - ID: "${placedTypeId}"`);
                     illegalFound.forEach(v => Console(player, "§l§4", v));
-                    block.setType("minecraft:air");
+                    block.setType(MC_AIR);
                 }
             }
         }
@@ -56,7 +57,7 @@ export function checkAirPlace(ev: PlayerPlaceBlockBeforeEvent): void {
     if(!currentConfig.BlockPlace.airPlace.enabled) return;
     if( 
         WorldUtils.getblock(WorldUtils.BlockPlaceWith(ev.face, ev.block.location))
-        === "minecraft:air"
+        === MC_AIR
     ){
         ev.cancel = true;
         staffMessage(ev.player, "AirPlace", ` - ID: ${ev.block.typeId}`);

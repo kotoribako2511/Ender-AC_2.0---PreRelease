@@ -19,10 +19,25 @@ import { resetAllFlags } from "./checks/movement/flags.js";
 import { ACState } from "./state.js";
 import { safeCall } from "./util/safe.js";
 import { isRiptideEnvironment, isRiptideItem } from "./checks/movement/teleport.js";
-import { MS_PER_TICK, ENDER_PEARL_GRACE_TICKS, FLUSH_INTERVAL_TICKS, BAN_MUTE_CLEAN_INTERVAL_TICKS, PERMISSION_CACHE_CLEAN_INTERVAL_TICKS, SWING_TICKS_BUFFER_SIZE, INSPECT_UI_COOLDOWN_TICKS, PEARL_MAX_GRACE_TICKS, EXPLOSION_KNOCKBACK_GRACE_TICKS, EXPLOSION_KNOCKBACK_GRACE_MAX_TICKS, RESPAWN_GRACE_TICKS, } from "./util/constants.js";
+import { ENDER_PEARL_GRACE_TICKS, MC_ITEM, MC_PLAYER, } from "./util/constants.js";
 import { PlayerCameraUI } from "./ui/player/camera.js";
 import { checkAirPlace } from "./checks/block/place.js";
 import { LandProtectManager } from "./checks/landProtect.js";
+// --- システム・定期処理 ---
+const INSPECT_UI_COOLDOWN_TICKS = 10;
+const FLUSH_INTERVAL_TICKS = 100;
+const BAN_MUTE_CLEAN_INTERVAL_TICKS = 100;
+const PERMISSION_CACHE_CLEAN_INTERVAL_TICKS = 100;
+// --- 猶予・バッファ ---
+const MS_PER_TICK = 50;
+const PEARL_MAX_GRACE_TICKS = 400;
+const RESPAWN_GRACE_TICKS = 40;
+const SWING_TICKS_BUFFER_SIZE = 200;
+const LAND_PROTECT_ROLLBACK_GRACE_TICKS = 20;
+// --- 爆発・判定範囲 ---
+const EXPLOSION_KNOCKBACK_GRACE_TICKS = 20;
+const EXPLOSION_KNOCKBACK_GRACE_MAX_TICKS = 300;
+const EXPLOSION_AFFECT_RADIUS_SQ = 100;
 class StrategyPipeline {
     constructor() {
         this.strategies = [];
@@ -220,7 +235,7 @@ playerTickPipeline
             const spawn = world.getDefaultSpawnLocation();
             player.teleport(spawn, { dimension: world.getDimension("overworld") });
         }
-        data.teleport.allowedUntilTick = Math.max(data.teleport.allowedUntilTick, ctx.nowTick + 20);
+        data.teleport.allowedUntilTick = Math.max(data.teleport.allowedUntilTick, ctx.nowTick + LAND_PROTECT_ROLLBACK_GRACE_TICKS);
         player.sendMessage(`${currentConfig.System.prefix} §cこのエリアには侵入できません。`);
     }
     else {
@@ -441,10 +456,10 @@ world.beforeEvents.entityHurt.subscribe(({ damageSource, hurtEntity }) => {
     if (!ACState.enabled)
         return;
     const fallCauses = ["fall", "anvil", "fallingBlock", "flyIntoWall", "stalagmite", "stalactite"];
-    if (hurtEntity.typeId === "minecraft:player" && fallCauses.includes(damageSource.cause)) {
+    if (hurtEntity.typeId === MC_PLAYER && fallCauses.includes(damageSource.cause)) {
         getPlayerData(hurtEntity).Nofall.tookFallDamage = true;
     }
-    if (hurtEntity.typeId !== "minecraft:player")
+    if (hurtEntity.typeId !== MC_PLAYER)
         return;
     const cause = damageSource.cause;
     const isKnockbackCause = cause === "entityExplosion" ||
@@ -481,7 +496,7 @@ world.beforeEvents.explosion.subscribe((ev) => {
             const dy = player.location.y - loc.y;
             const dz = player.location.z - loc.z;
             const distSq = dx * dx + dy * dy + dz * dz;
-            if (distSq > 100)
+            if (distSq > EXPLOSION_AFFECT_RADIUS_SQ)
                 continue;
             const data = getPlayerData(player);
             const scaled = TPSCalculator.scaleTicksFor(player, EXPLOSION_KNOCKBACK_GRACE_TICKS * 2);
@@ -499,7 +514,7 @@ world.afterEvents.entityDie.subscribe(({ deadEntity }) => {
         return;
     if (!deadEntity.isValid)
         return;
-    if (deadEntity.typeId !== "minecraft:player")
+    if (deadEntity.typeId !== MC_PLAYER)
         return;
     const player = deadEntity;
     const data = getPlayerData(player);
@@ -539,7 +554,7 @@ world.afterEvents.entitySpawn.subscribe(({ entity, cause }) => {
         return;
     if (!entity.isValid)
         return;
-    if (entity.typeId === "minecraft:item") {
+    if (entity.typeId === MC_ITEM) {
         const item = entity.getComponent('minecraft:item')?.itemStack;
         processItemEntityTick(entity, item);
         return;

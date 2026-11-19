@@ -40,20 +40,4 @@ export const TAG_KEYS = {
     tpBypass: "eac:tpBypass",
     sleeping: "sleeping",
 };
-export const MS_PER_TICK = 50;
 export const ENDER_PEARL_GRACE_TICKS = 100;
-export const FLUSH_INTERVAL_TICKS = 100;
-export const BAN_MUTE_CLEAN_INTERVAL_TICKS = 100;
-export const PERMISSION_CACHE_CLEAN_INTERVAL_TICKS = 100;
-export const SWING_TICKS_BUFFER_SIZE = 200;
-export const INSPECT_UI_COOLDOWN_TICKS = 10;
-export const RIPTIDE_MAX_FLIGHT_TICKS = 120;
-export const RIPTIDE_MAX_DISTANCE = 50;
-export const RIPTIDE_GROUND_CONFIRM_TICKS = 3;
-export const RIPTIDE_STARTUP_PROTECT_TICKS = 10;
-export const CHORUS_MAX_WAIT_TICKS = 50;
-export const PEARL_MAX_GRACE_TICKS = 400;
-export const EXPLOSION_KNOCKBACK_GRACE_TICKS = 20;
-export const EXPLOSION_KNOCKBACK_GRACE_MAX_TICKS = 300;
-export const RESPAWN_TELEPORT_GRACE_TICKS = 40;
-export const RESPAWN_GRACE_TICKS = 40;

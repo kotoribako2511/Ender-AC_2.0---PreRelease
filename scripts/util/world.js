@@ -2,6 +2,7 @@ import { world, system } from "@minecraft/server";
 import { Nofall_safeBlocks } from "../data/info.js";
 import { safeGet } from "./safe.js";
 import { getCachedBlockTypeId } from "./blockCache.js";
+import { MC_AIR } from "./constants.js";
 export class WorldUtils {
     static initialize() {
         system.run(() => {
@@ -29,12 +30,12 @@ export class WorldUtils {
     static getblock(location, dimId) {
         const result = safeGet(() => {
             if (!this.isInsideWorld(location, dimId))
-                return "minecraft:air";
+                return MC_AIR;
             const dim = this.getDimension(dimId);
             if (!dim)
-                return "minecraft:air";
-            return getCachedBlockTypeId(dim, location.x, location.y, location.z) ?? "minecraft:air";
-        }, "minecraft:air");
+                return MC_AIR;
+            return getCachedBlockTypeId(dim, location.x, location.y, location.z) ?? MC_AIR;
+        }, MC_AIR);
         return result;
     }
     static isStandingOnSafeBlock(location, dimId) {
@@ -64,7 +65,7 @@ export class WorldUtils {
         const x = Math.floor(location.x), y = Math.floor(location.y), z = Math.floor(location.z);
         for (let dx = -1; dx <= 1; dx++) {
             for (let dz = -1; dz <= 1; dz++) {
-                if (getCachedBlockTypeId(dim, x + dx, y - 1, z + dz) !== "minecraft:air")
+                if (getCachedBlockTypeId(dim, x + dx, y - 1, z + dz) !== MC_AIR)
                     return false;
             }
         }

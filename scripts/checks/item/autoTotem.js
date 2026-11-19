@@ -3,9 +3,10 @@ import { currentConfig } from "../../data/config.js";
 import { Console, getPlayerData, TPSCalculator, staffMessage } from "../../util/util.js";
 import { AutoTotemEfName, AutoTotemEfDra, AutoTotemEfDra2 } from "../../data/info.js";
 import { PermissionManager, DetectionType } from "../../permission.js";
+import { MC_PLAYER } from "../../util/constants.js";
 //AutoTotem beta version
 export function AutoTotem(ev, now) {
-    if (!ev.entity.isValid || ev.entity.typeId !== "minecraft:player")
+    if (!ev.entity.isValid || ev.entity.typeId !== MC_PLAYER)
         return;
     if (PermissionManager.shouldSkipDetection(ev.entity, DetectionType.AutoTotem))
         return;

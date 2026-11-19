@@ -4,7 +4,6 @@ import { ACPlayer } from "../../data/type.js";
 import { PermissionManager, DetectionType } from "../../permission.js";
 import { isInBubbleColumn, isInSpecialSlowBlock } from "./helpers.js";
 import { executePunishment } from "../../util/punishment.js";
-import { getEffectiveIsFalling } from "./nofall.js";
 
 export function checkContradictions(player: Player, data: ACPlayer, isOnGround: boolean, speedY: number, isSpecialMovement: boolean): void {
     if (PermissionManager.shouldSkipDetection(player, DetectionType.Contradiction)) return;
