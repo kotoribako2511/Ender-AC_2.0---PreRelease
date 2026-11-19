@@ -5,7 +5,7 @@ import { ACPlayer } from "../../data/type.js";
 import { PermissionManager, DetectionType } from "../../permission.js";
 import { addFlag } from "./flags.js";
 import { executePunishment } from "../../util/punishment.js";
-import { MC_AIR } from "../../util/constants.js";
+import { safeGetBlock } from "./helpers.js";
 
 const DOWNWARD_VY_THRESHOLD = -0.08;
 const FALLING_VY_THRESHOLD = -0.15;
@@ -128,10 +128,10 @@ export function checkNofall(
         return;
     }
 
-    const dimId = player.dimension.id;
+    const dim = player.dimension;
     const nofallData = data.Nofall;
 
-    const feetBlock = WorldUtils.getblock({ x: loc.x, y: loc.y - 0.1, z: loc.z }, dimId);
+    const feetBlock = safeGetBlock(dim, loc.x, loc.y - 0.1, loc.z )?.typeId ?? "minecraft:air";
     const isLiquid = feetBlock === "minecraft:water" || feetBlock === "minecraft:flowing_water" || feetBlock === "minecraft:lava" || feetBlock === "minecraft:flowing_lava";
 
     if (hasEffect || isSpecialMovement || player.isInWater || player.isSwimming || isLiquid) {
@@ -162,7 +162,7 @@ export function checkNofall(
         } else {
             const fallDistance = nofallData.fallStartY - loc.y;
             if (fallDistance > TPSCalculator.scaleMultiplyFor(player, Nofall.distanceThreshold)
-                && !WorldUtils.isStandingOnSafeBlock(loc, dimId) && !isLiquid) {
+                && !WorldUtils.isStandingOnSafeBlock(loc, dim.id) && !isLiquid) {
 
                 nofallData.isChecking = true;
                 const expectedFallStartY = nofallData.fallStartY;
@@ -177,11 +177,11 @@ export function checkNofall(
 
                     const noNewFall = Math.abs(nofallData.fallStartY - expectedFallStartY) < 0.5;
                     const currentLoc = player.location;
-                    const currentDimId = player.dimension.id;
-                    const currentFeet = WorldUtils.getblock({ x: currentLoc.x, y: currentLoc.y - 0.1, z: currentLoc.z }, currentDimId);
-                    const isNowLiquid = currentFeet === "minecraft:water" || currentFeet === "minecraft:flowing_water" || currentFeet === "minecraft:lava" || currentFeet === "flowing_lava";
+                    const currentDim = player.dimension;
+                    const currentFeet = safeGetBlock( currentDim, currentLoc.x, currentLoc.y - 0.1, currentLoc.z )?.typeId ?? "minecraft:air";
+                    const isNowLiquid = currentFeet === "minecraft:water" || currentFeet === "minecraft:flowing_water" || currentFeet === "minecraft:lava" || currentFeet === "minecraft:flowing_lava";
                     const isNowSpecial = player.isFlying || player.isGliding || player.isInWater || player.isSwimming || player.isClimbing || player.getComponent("minecraft:riding")?.isValid;
-                    const isNowSafe = (player.isOnGround && (WorldUtils.isStandingOnSafeBlock(currentLoc, currentDimId) || isNowLiquid)) || isNowSpecial;
+                    const isNowSafe = (player.isOnGround && (WorldUtils.isStandingOnSafeBlock(currentLoc, currentDim.id) || isNowLiquid)) || isNowSpecial;
 
                     if (gm !== GameMode.Creative && gm !== GameMode.Spectator
                         && !nofallData.tookFallDamage
@@ -212,7 +212,7 @@ export function checkNofall(
     let isFeetAir = false;
     let isChunkLoaded = true;
     try {
-        const block = player.dimension.getBlock({ x: Math.floor(loc.x), y: Math.floor(loc.y), z: Math.floor(loc.z) });
+        const block = safeGetBlock(dim, Math.floor(loc.x), Math.floor(loc.y), Math.floor(loc.z));
         if (block) {
             isFeetAir = block.isAir;
         } else {

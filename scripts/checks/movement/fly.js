@@ -5,6 +5,7 @@ import { PermissionManager, DetectionType } from "../../permission.js";
 import { addFlag, decayFlag } from "./flags.js";
 import { executePunishment } from "../../util/punishment.js";
 import { getEffectiveIsFalling } from "./nofall.js";
+import { safeGetBlock } from "./helpers.js";
 const FLY_A_BUFFER_SIZE = 8;
 const FLY_A_NEAR_ZERO_VELOCITY = 0.02;
 const FLY_A_HOVER_Y_RANGE = 0.05;
@@ -132,8 +133,8 @@ export function checkBDSFly(player, data, loc, isSpecialMovement, speedY, hasEff
         BDSFly.BDSfly.length = BDSFLY_BUFFER_SIZE;
     if (BDSFly.BDSfly.length < BDSFLY_BUFFER_SIZE)
         return;
-    const dimId = player.dimension.id;
-    const belowId = WorldUtils.getblock({ x: loc.x, y: loc.y - 1, z: loc.z }, dimId);
+    const dim = player.dimension;
+    const belowId = safeGetBlock(dim, loc.x, loc.y - 1, loc.z)?.typeId ?? "minecraft:air";
     if (data.Lock.Climb && data.Lock.Freeze_Detection
         && player.isOnGround
         && !wasOnGround
@@ -141,7 +142,7 @@ export function checkBDSFly(player, data, loc, isSpecialMovement, speedY, hasEff
         && belowId === "minecraft:air") {
         const quad = MathUtils.isQuadratic(BDSFly.BDSfly);
         const notAllZero = !BDSFly.BDSfly.every((v) => v === 0);
-        const isFloor = WorldUtils.isfloor(loc, dimId);
+        const isFloor = WorldUtils.isfloor(loc, dim.id);
         if (quad < TPSCalculator.scaleMultiply(cfg.threshold) && notAllZero && isFloor) {
             const vl = addFlag(BDSFly.bdsflyFlag, nowTick);
             if (vl < cfg.flagThreshold)
