@@ -1,4 +1,4 @@
-# Ender-AC
+# Ender-AC (Ender-AntiCheatSystem)
 
 Ender-ACは、Minecraft Bedrock Edition（統合版）向けのチート検知・サーバー管理アドオンです。
 ![メインメニュー](docs/images/AirJump.png)
