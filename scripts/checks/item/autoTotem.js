@@ -1,6 +1,6 @@
 import { EquipmentSlot, system } from "@minecraft/server";
 import { currentConfig } from "../../data/config.js";
-import { Console, getPlayerData, TPSCalculator, staffMessage } from "../../util/util.js";
+import { Console, getPlayerData, TPSCalculator, staffMessage, MathUtils } from "../../util/util.js";
 import { AutoTotemEfName, AutoTotemEfDra, AutoTotemEfDra2 } from "../../data/info.js";
 import { PermissionManager, DetectionType } from "../../permission.js";
 import { MC_PLAYER } from "../../util/constants.js";
@@ -15,9 +15,11 @@ export function AutoTotem(ev, now) {
     arr.unshift({ effectName: ev.effect.typeId, dration: ev.effect.duration, date: now });
     if (arr.length >= 3) {
         const [a, b, c] = arr;
-        const sameEffect = a.effectName === AutoTotemEfName[0] && b.effectName === AutoTotemEfName[1] && c.effectName === AutoTotemEfName[2];
-        const sameDuration = a.dration === AutoTotemEfDra[0] && b.dration === AutoTotemEfDra[1] && c.dration === AutoTotemEfDra[2];
-        const sameDuration2 = a.dration === AutoTotemEfDra2[0] && b.dration === AutoTotemEfDra2[1] && c.dration === AutoTotemEfDra2[2];
+        const nameArr = [a.effectName, b.effectName, c.effectName];
+        const drationArr = [a.dration, b.dration, c.dration];
+        const sameEffect = MathUtils.isEqual(nameArr, AutoTotemEfName);
+        const sameDuration = MathUtils.isEqual(drationArr, AutoTotemEfDra);
+        const sameDuration2 = MathUtils.isEqual(drationArr, AutoTotemEfDra2);
         const sameTick = a.date === c.date;
         const lowHp = ev.entity.getComponent("minecraft:health")?.currentValue === 1;
         const hasTotem = data.AutoTotem.lastMainhand || data.AutoTotem.lastOffhand;

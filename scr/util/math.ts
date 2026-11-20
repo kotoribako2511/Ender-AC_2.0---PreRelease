@@ -52,4 +52,8 @@ export class MathUtils {
         const dot = Math.max(-1, Math.min(1, (view.x * dx + view.y * dy + view.z * dz) / dist));
         return Math.acos(dot) * (180 / Math.PI);
     }
+
+    public static  isEqual = (a: string[] | number[], b: string[] | number[]) => 
+        a.length === b.length && a.every((val, i) => val === b[i]);
+    
 }

@@ -49,3 +49,4 @@ export class MathUtils {
         return Math.acos(dot) * (180 / Math.PI);
     }
 }
+MathUtils.isEqual = (a, b) => a.length === b.length && a.every((val, i) => val === b[i]);
